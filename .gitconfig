@@ -1,0 +1,63 @@
+[include]
+path          = ~/.gitconfig_user
+
+[core]
+autocrlf      = input
+commitGraph   = true
+editor        = vim
+page          = less -FRSX
+quotepath     = false
+
+[receive]
+advertisePushOptions = true
+
+[gc]
+writeCommitGraph = true
+
+[color]
+diff          = auto
+status        = auto
+branch        = auto
+interactive   = auto
+ui            = true
+
+[status]
+relativePaths = true
+
+[apply]
+whitespace    = nowarn
+
+[mergetool]
+keepBackup    = false
+
+[difftool]
+prompt        = false
+
+[help]
+autocorrect   = 1
+
+[pager]
+diff          =
+
+[push]
+default       = simple
+
+[diff]
+tool          = vimdiff
+
+[log]
+abbrevCommit  = true
+follow        = true
+decorate      = full
+
+[alias]
+s             = status
+co            = checkout
+br            = branch
+ci            = commit
+df            = diff --color
+d             = difftool
+stash-all     = stash save --include-untracked
+glog          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+prune         = fetch --prune
+squash-all    = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"

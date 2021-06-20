@@ -1,0 +1,37 @@
+# vim: set filetype=bash
+
+alias ls='ls --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias sl='ls'
+
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+
+alias grep='grep --color=auto --exclude-dir={.git}'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+alias g='git'
+alias gti='git'
+alias ga='git add'
+
+alias vi='vim'
+alias v='vim'
+
+alias mci='mvn clean install -DskipTests'
+
+alias vssh='vagrant ssh'
+
+alias less='less -r'
+
+if [[ "$(uname -s)" == "Linux" ]]; then
+  alias open='xdg-open'
+  alias pbcopy='xclip -selection clipboard'
+  alias pbpaste='xclip -selection clipboard -o'
+fi
+
+alias diskspace='du -S | sort -n -r | more'
