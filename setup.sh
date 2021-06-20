@@ -5,6 +5,7 @@ DIR=$(dirname "$(realpath "$0")")
 FILES=(
 .aliases
 .bashrc
+.curlrc
 .dir_colors
 .editrc
 .gitconfig
