@@ -31,14 +31,19 @@ shopt -s checkwinsize
 # directories and subdirectories.
 shopt -s globstar
 
-# Automatically correct misspelled directory names
-shopt -s cdspell
-
 # Change into directories by just typing the directory name without 'cd'
 shopt -s autocd
 
 # When using history substitution, only show the resulting command instead of executing it immediately
 shopt -s histverify
+
+if [ "$UID" != 0 ]; then
+    # Automatically correct misspelled directory names
+    shopt -s cdspell
+
+    # Case insensitive globbing (used in pathname expansion)
+    shopt -s nocaseglob
+fi
 
 # Make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -99,6 +104,9 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
+
+export VISUAL=vim
+export EDITOR=vim
 
 if [ -d "$HOME/bin" ]; then
     export PATH="$HOME/bin:$PATH"

@@ -1,9 +1,11 @@
 $include /etc/inputrc
 
+# search history with up and down arrows
 "\e[A": history-search-backward
 "\e[B": history-search-forward
 
 set colored-stats on
+set colored-completion-prefix on
 set completion-ignore-case on
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
@@ -11,8 +13,16 @@ set visible-stats on
 
 set editing-mode emacs
 set completion-prefix-display-length 3
-set mark-symlinked-directories on
 set skip-completed-text on
 set menu-complete-display-prefix on
+set match-hidden-files off
+
+set mark-symlinked-directories on
+
+set page-completions off
+
+set input-meta on
+set output-meta on
+set convert-meta on
 
 Tab: menu-complete
