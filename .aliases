@@ -28,6 +28,10 @@ alias vssh='vagrant ssh'
 
 alias less='less -r'
 
+if [[ "$(uname -o)" == "Msys" ]]; then
+  alias open='start'
+fi
+
 if [[ "$(uname -s)" == "Linux" ]]; then
   alias open='xdg-open'
   alias pbcopy='xclip -selection clipboard'
