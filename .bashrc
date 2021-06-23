@@ -94,7 +94,11 @@ parse_git_branch() {
 }
 
 # Set up prompt
-export PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]$(parse_git_branch)$(git_branch_dirty)\n> '
+if [[ "$(uname -o)" != "Msys" ]]; then
+    export PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]$(parse_git_branch)$(git_branch_dirty)\n> '
+else
+    export PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n> '
+fi
 
 # Make man pages easier to read
 export LESS_TERMCAP_mb=$'\E[01;31m'
