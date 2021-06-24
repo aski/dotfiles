@@ -22,6 +22,10 @@ alias ga='git add'
 alias vi='vim'
 alias v='vim'
 
+alias cp='cp -v'
+alias mv='mv -v'
+alias rm='rm -v -I'
+
 alias mci='mvn clean install -DskipTests'
 
 alias vssh='vagrant ssh'
