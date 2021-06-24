@@ -104,8 +104,12 @@ set lazyredraw
 set synmaxcol=3000
 set noshowmode
 set dictionary+=/usr/share/dict/words
-"set spell spelllang=en_us
+set spelllang=en_us
 set nospell
+
+"""
+"""
+"""
 
 let g:sql_type_default='sqloracle'                                                      " set default sql dialect to oracle
 
@@ -120,16 +124,22 @@ let g:netrw_winsize=25
 let g:ale_linter_aliases = { 'maven': 'xml' }
 
 let g:lightline = {}
-let g:lightline.colorscheme = 'gruvbox'
+let g:lightline.colorscheme = 'nord'
 
 let g:vimwiki_list = [{'path': '~/vimwiki/',
             \ 'syntax': 'markdown', 'ext': '.md'}]
 
-" ## CUSTOM KEY BINDINGS
+let g:plantuml_executable_script='~/bin/plantuml.sh'
+
+let g:rainbow_active = 1
+
+"""
+""" KEYBINDINGS
+"""
+
 let mapleader = ','                                                                     " set leader key to comma
 
 nnoremap <leader><space> :nohlsearch<CR>                                                " set key to turn off search highlighting
-nnoremap <leader>gg :GitGutterToggle<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>f :Files<CR>
 nnoremap <leader>w :Windows<CR>
@@ -155,7 +165,9 @@ noremap <C-i> <C-w>i
 noremap <C-l> <C-w>l
 noremap <C-j> <C-w>j
 
-" ## AUTOCOMMAND SETTINGS FOR A COUPLE OF FILE TYPES
+"""
+""" AUTOCOMMANDS
+"""
 augroup ft_xml
     autocmd!
     autocmd BufRead,BufNewFile pom.xml set filetype=maven
@@ -209,21 +221,3 @@ augroup ft_groovy
     autocmd!
     autocmd BufRead,BufNewFile Jenkinsfile set ft=groovy
 augroup END
-
-let g:ale_linter_aliases = { 'maven': 'xml' }
-
-let g:gitgutter_map_keys=0
-let g:gitgutter_highlight_lines=0
-let g:gitgutter_enabled=0
-
-let NERDTreeMinimalUI=1
-
-let vim_markdown_preview_github=1
-let vim_markdown_preview_browser='firefox'
-
-let g:plantuml_executable_script='~/bin/plantuml.sh'
-
-let g:lightline = {}
-let g:lightline.colorscheme = 'nord'
-
-let g:rainbow_active = 1
