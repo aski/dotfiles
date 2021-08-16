@@ -15,7 +15,7 @@ advertisePushOptions = true
 writeCommitGraph = true
 
 [color]
-diff          = auto
+diff          = always
 status        = auto
 branch        = auto
 interactive   = auto

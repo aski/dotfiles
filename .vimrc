@@ -221,3 +221,7 @@ augroup ft_groovy
     autocmd!
     autocmd BufRead,BufNewFile Jenkinsfile set ft=groovy
 augroup END
+
+com! FormatXML :%!python3 -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
+
+nnoremap = :FormatXML<Cr>
