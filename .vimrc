@@ -222,6 +222,10 @@ augroup ft_groovy
     autocmd BufRead,BufNewFile Jenkinsfile set ft=groovy
 augroup END
 
-com! FormatXML :%!python3 -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
+if has("win32")
+    com! FormatXML :%!python -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
+else
+    com! FormatXML :%!python3 -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
+end
 
 nnoremap = :FormatXML<Cr>
