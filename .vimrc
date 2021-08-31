@@ -49,7 +49,8 @@ set cursorline                                                                  
 set shortmess=a                                                                         " abbreviate some of the stuff shown in cmd line
 set shortmess+=t                                                                        " abbreviate file name in cmd line if too long
 set shortmess+=I                                                                        " hide startup message
-set number                                                                              " show line numbers
+set nonumber                                                                            " hide normal line numbers
+set relativenumber                                                                      " show relative line numbers
 set numberwidth=3                                                                       " minimum width of line number column
 set hidden                                                                              " allow unsaved buffers
 set textwidth=120                                                                       " set the textwidth to be 120 chars
