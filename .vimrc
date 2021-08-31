@@ -66,6 +66,7 @@ set autoindent                                                                  
 set copyindent
 set tabstop=4                                                                           " the amount of spaces a tab counts for
 set shiftwidth=4                                                                        " number of spaces to use for each step of indent
+set softtabstop=4
 set shiftround
 set expandtab                                                                           " insert spaces instead of tabs
 set smarttab                                                                            " very smart behaviour with tabs and spaces?
@@ -84,7 +85,7 @@ set guioptions-=T                                                               
 set guioptions-=r                                                                       " remove right-hand scroll bar
 set guioptions-=L                                                                       " remove left-hand scroll bar
 set list                                                                                " show whitespace characters
-set listchars=tab:>\ ,trail:.,extends:>,precedes:<,nbsp:+
+set listchars=tab:▸\ ,trail:.,extends:>,precedes:<,nbsp:+
 set scrolloff=5
 set sidescrolloff=5
 set autoread                                                                            " reload (unchanged) files when file system change is detected
@@ -151,7 +152,7 @@ let mapleader = ','                                                             
 nnoremap <leader><space> :nohlsearch<CR>                                                " set key to turn off search highlighting
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>f :Files<CR>
-nnoremap <leader>w :Windows<CR>
+nnoremap <leader>v :Windows<CR>
 
 nmap     <silent><leader>ev :e ~/.vimrc<CR>                                             " set key to quickly open vimrc in new buffer
 nmap     <silent><leader>sv :source ~/.vimrc<CR>                                        " set key to source vimrc
@@ -177,11 +178,19 @@ noremap <C-j> <C-w>j
 """
 """ AUTOCOMMANDS
 """
+augroup general
+    autocmd!
+    " When editing a git commit, DO NOT jump to the last cursor position
+    autocmd BufReadPost *
+      \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+      \ |   exe "normal! g`\""
+      \ | endif
+augroup END
+
 augroup ft_xml
     autocmd!
-    autocmd BufRead,BufNewFile pom.xml set filetype=maven
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    autocmd FileType maven setlocal syntax=xml
+    autocmd BufRead,BufNewFile pom.xml set filetype=xml
+    autocmd FileType xml setlocal tabstop=2 softtabstop=2 shiftwidth=2 foldlevel=2 expandtab
 augroup END
 
 augroup ft_latex
@@ -192,38 +201,31 @@ augroup END
 augroup ft_javascript
     autocmd!
     autocmd fileType javascript setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-    autocmd fileType vue setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 augroup END
 
 augroup ft_yaml
     autocmd!
-    autocmd FileType yml,yaml setlocal ts=2 sts=2 sw=2 foldlevel=2 expandtab
+    autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2 foldlevel=2 expandtab
 augroup END
 
 augroup ft_ruby
     autocmd!
     autocmd BufRead,BufNewFile *.erb set filetype=eruby
-    autocmd BufRead,BufNewFile */cookbooks/*/*.rb set filetype=ruby.chef
-    autocmd FileType ruby,ruby.chef setlocal ts=2 sts=2 sw=2 expandtab
+    autocmd FileType ruby setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 augroup END
 
 augroup ft_markdown
     autocmd!
     autocmd BufNewFile,BufReadPost *.md set ft=markdown
-    autocmd FileType markdown setlocal ts=4 sts=4 sw=4 wrap
-augroup END
-
-augroup ft_git
-    autocmd!
-    autocmd BufRead,BufNewFile *gitconfig* set ft=dosini
-    autocmd FileType gitcommit setlocal tw=72
+    autocmd FileType markdown setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab wrap
 augroup END
 
 augroup ft_ansible
     autocmd!
+    autocmd BufRead,BufNewFile */playbooks/*.yml set filetype=yaml.ansible
     autocmd BufRead,BufNewFile */ansible/*/hosts set syntax=ansible_hosts
-    autocmd BufRead,BufNewFile */ansible/*/*.yml set syntax=ansible
-    autocmd FileType ansible setlocal ts=2 sts=2 sw=2 expandtab
+    autocmd BufRead,BufNewFile */ansible/*/*.yml set syntax=yaml.ansible
+    autocmd FileType yaml.ansible setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 augroup END
 
 augroup ft_groovy
