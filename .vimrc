@@ -124,10 +124,18 @@ let g:netrw_winsize=25
 
 let g:ale_linter_aliases = { 'maven': 'xml' }
 
-let g:lightline = {}
-let g:lightline.colorscheme = 'nord'
+let g:lightline = {
+      \ 'colorscheme': 'nord',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
 
-let g:vimwiki_list = [{'path': '~/vimwiki/',
+let g:vimwiki_list = [{'path': '~/Documents/vimwiki/',
             \ 'syntax': 'markdown', 'ext': '.md'}]
 
 let g:plantuml_executable_script='~/bin/plantuml.sh'
