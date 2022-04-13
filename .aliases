@@ -43,3 +43,4 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 fi
 
 alias diskspace='du -S | sort -n -r | more'
+alias vim='nvim'
