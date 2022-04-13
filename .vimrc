@@ -1,25 +1,23 @@
 " if vim-plug is not installed, get it from github
-if empty(glob('~/.vim/autoload/plug.vim'))
+if !filereadable(expand('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
+Plug 'arcticicestudio/nord-vim'
+Plug 'itchyny/lightline.vim'
 
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-git'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-endwise'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-
-Plug 'arcticicestudio/nord-vim'
-
-Plug 'itchyny/lightline.vim'
 
 Plug 'godlygeek/tabular'
 Plug 'w0rp/ale'
@@ -28,11 +26,15 @@ Plug 'vimwiki/vimwiki'
 Plug 'pearofducks/ansible-vim'
 Plug 'vim-ruby/vim-ruby'
 Plug 'vim-scripts/groovyindent-unix'
-Plug 'aklt/plantuml-syntax'
-Plug 'weirongxu/plantuml-previewer.vim'
-Plug 'tyru/open-browser.vim'
 Plug 'luochen1990/rainbow'
 Plug 'pedrohdz/vim-yaml-folds'
+
+if has('nvim')
+    Plug 'andersevenrud/nordic.nvim'
+    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+endif
 call plug#end()
 
 filetype plugin indent on
@@ -124,6 +126,10 @@ let g:netrw_preview=1
 let g:netrw_winsize=25
 
 let g:ale_linter_aliases = { 'maven': 'xml' }
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+let g:ale_lint_on_text_changed = 'never'
 
 let g:lightline = {
       \ 'colorscheme': 'nord',
@@ -139,9 +145,11 @@ let g:lightline = {
 let g:vimwiki_list = [{'path': '~/Documents/vimwiki/',
             \ 'syntax': 'markdown', 'ext': '.md'}]
 
-let g:plantuml_executable_script='~/bin/plantuml.sh'
-
 let g:rainbow_active = 1
+
+let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
+let g:fzf_layout = { 'down': '40%' }
+
 
 """
 """ KEYBINDINGS
@@ -150,9 +158,17 @@ let g:rainbow_active = 1
 let mapleader = ','                                                                     " set leader key to comma
 
 nnoremap <leader><space> :nohlsearch<CR>                                                " set key to turn off search highlighting
-nnoremap <leader>b :Buffers<CR>
-nnoremap <leader>f :Files<CR>
-nnoremap <leader>v :Windows<CR>
+if has('nvim')
+    nnoremap <leader>ff <cmd>Telescope find_files<cr>
+    nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+    nnoremap <leader>fb <cmd>Telescope buffers<cr>
+    nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+else
+    nnoremap <leader>b :Buffers<CR>
+    nnoremap <leader>f :Files<CR>
+    nnoremap <leader>v :Windows<CR>
+    nnoremap <leader>l :Lines<CR>
+endif
 
 nmap     <silent><leader>ev :e ~/.vimrc<CR>                                             " set key to quickly open vimrc in new buffer
 nmap     <silent><leader>sv :source ~/.vimrc<CR>                                        " set key to source vimrc
@@ -175,6 +191,7 @@ noremap <C-i> <C-w>i
 noremap <C-l> <C-w>l
 noremap <C-j> <C-w>j
 
+
 """
 """ AUTOCOMMANDS
 """
@@ -193,14 +210,20 @@ augroup ft_xml
     autocmd FileType xml setlocal tabstop=2 softtabstop=2 shiftwidth=2 foldlevel=2 expandtab
 augroup END
 
+augroup ft_html
+    autocmd!
+    autocmd FileType html setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+augroup END
+
 augroup ft_latex
     autocmd!
     autocmd BufRead *.tex setlocal spell spelllang=en_nz
 augroup END
 
+
 augroup ft_javascript
     autocmd!
-    autocmd fileType javascript setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+    autocmd FileType javascript setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 augroup END
 
 augroup ft_yaml
@@ -233,10 +256,16 @@ augroup ft_groovy
     autocmd BufRead,BufNewFile Jenkinsfile set ft=groovy
 augroup END
 
-if has("win32")
-    com! FormatXML :%!python -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
-else
-    com! FormatXML :%!python3 -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
-end
 
-nnoremap = :FormatXML<Cr>
+if !has('nvim')
+    if has("win32")
+        com! FormatXML :%!python -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
+    else
+        com! FormatXML :%!python3 -c "import xml.dom.minidom, sys, os; print(os.linesep.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
+    end
+    nnoremap = :FormatXML<Cr>
+endif
+
+if has('nvim')
+    lua require('aski')
+endif

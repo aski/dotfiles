@@ -30,3 +30,18 @@ do
         echo "$HOME/$f already exists"
     fi
 done
+
+mkdir -p ~/.vim/autoload
+mkdir -p ~/.config/nvim
+
+if [ ! -e ~/.config/nvim/autoload ]; then
+    ln -s ~/.vim/autoload ~/.config/nvim/autoload
+fi
+
+if [ ! -e ~/.config/nvim/init.vim ]; then
+    ln -s ~/.vimrc ~/.config/nvim/init.vim
+fi
+
+if [ ! -e ~/.config/nvim/lua ]; then
+    ln -s "$DIR"/lua ~/.config/nvim/lua
+fi
