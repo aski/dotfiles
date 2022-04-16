@@ -34,8 +34,14 @@ done
 mkdir -p ~/.vim/autoload
 mkdir -p ~/.config/nvim
 
+
 if [ ! -e ~/.config/nvim/autoload ]; then
     ln -s ~/.vim/autoload ~/.config/nvim/autoload
+fi
+
+ln -s ~/.dotfiles/after/ ~/.vim/after
+if [ ! -e ~/.config/nvim/after ]; then
+    ln -s ~/.vim/after ~/.config/nvim/after
 fi
 
 if [ ! -e ~/.config/nvim/init.vim ]; then
