@@ -16,13 +16,17 @@ source ~/.zplug/init.zsh
 
 zplug "zplug/zplug"
 zplug "yous/vanilli.sh"
+
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:3
 zplug "zsh-users/zsh-history-substring-search", defer:3
-zplug "changyuheng/zsh-interactive-cd"
+
+# needed for pure prompt
 zplug "mafredri/zsh-async", from:github
+
 zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
+
 zplug "plugins/colored-man-pages",  from:oh-my-zsh, as:plugin
 
 zplug check --verbose || zplug install
