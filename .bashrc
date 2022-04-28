@@ -120,3 +120,6 @@ fi
 [ -s "$HOME/.fzf.bash" ] && source "$HOME/.fzf.bash"
 [ -d "$HOME/.sdkman" ] && export SDKMAN_DIR="$HOME/.sdkman"
 [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+
