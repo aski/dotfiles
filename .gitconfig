@@ -4,7 +4,7 @@ path          = ~/.gitconfig_user
 [core]
 autocrlf      = input
 commitGraph   = true
-editor        = vim
+editor        = nvim
 page          = less -FRSX
 quotepath     = false
 
