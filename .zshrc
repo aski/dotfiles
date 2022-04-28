@@ -52,6 +52,7 @@ command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.aliases ] && source ~/.aliases
+[ -f ~/.cargo/env ] && source "~/.cargo/env"
 
 # Load local customizations from ~/.zshrc.local
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
