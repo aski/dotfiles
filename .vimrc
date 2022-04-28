@@ -37,18 +37,23 @@ Plug 'luochen1990/rainbow'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-easy-align'
 
 Plug 'pearofducks/ansible-vim'
 Plug 'vim-ruby/vim-ruby'
 Plug 'vim-scripts/groovyindent-unix'
 Plug 'pedrohdz/vim-yaml-folds'
+Plug 'rust-lang/rust.vim'
 
 if has('nvim')
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
     Plug 'neovim/nvim-lspconfig'
+    Plug 'kyazdani42/nvim-tree.lua'
 endif
+
+Plug 'towolf/vim-helm'
 
 call plug#end()
 
