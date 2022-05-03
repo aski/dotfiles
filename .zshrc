@@ -20,7 +20,6 @@ zplug "yous/vanilli.sh"
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:3
-zplug "zsh-users/zsh-history-substring-search", defer:3
 
 # needed for pure prompt
 zplug "mafredri/zsh-async", from:github
@@ -38,11 +37,6 @@ setopt share_history
 
 # ... because vim keybindings in the shell are strange
 set -o emacs
-
-if zplug check zsh-users/zsh-history-substring-search; then
-    bindkey '^[OA' history-substring-search-up
-    bindkey '^[OB' history-substring-search-down
-fi
 
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
