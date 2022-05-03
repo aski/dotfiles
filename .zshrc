@@ -1,18 +1,18 @@
 # Download zplug if it is not installed
-if [[ ! -d ~/.zplug ]]; then
+if [[ ! -d "$HOME/.zplug" ]]; then
     git clone -q --depth 1 --branch master \
-        --single-branch https://github.com/zplug/zplug ~/.zplug
-    source ~/.zplug/init.zsh && zplug update
+        --single-branch https://github.com/zplug/zplug "$HOME/.zplug"
+    source "$HOME/.zplug/init.zsh" && zplug update
 fi
 
 # Download fzf command-line fuzzy finder if it is not installed
-if [[ ! -d ~/.fzf ]]; then
+if [[ ! -d "$HOME/.fzf" ]]; then
     git clone -q --depth 1 --branch master \
-        --single-branch https://github.com/junegunn/fzf ~/.fzf
-    ~/.fzf/install --all
+        --single-branch https://github.com/junegunn/fzf "$HOME/.fzf"
+    "$HOME/.fzf/install" --all
 fi
 
-source ~/.zplug/init.zsh
+source "$HOME/.zplug/init.zsh"
 
 zplug "zplug/zplug"
 zplug "yous/vanilli.sh"
@@ -44,18 +44,18 @@ if zplug check zsh-users/zsh-history-substring-search; then
     bindkey '^[OB' history-substring-search-down
 fi
 
-[ -f  ~/.dir_colors ] && eval $(dircolors ~/.dir_colors)
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f ~/.aliases ] && source ~/.aliases
-[ -f ~/.cargo/env ] && source "~/.cargo/env"
+[ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+[ -f  "$HOME/.dir_colors" ] && eval $(dircolors "$HOME/.dir_colors")
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # Load local customizations from ~/.zshrc.local
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -d ~/.sdkman ] && export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
