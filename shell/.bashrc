@@ -1,5 +1,10 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_CACHE_HOME="$HOME/.cache"
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -109,6 +114,11 @@ export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_CACHE_HOME="$HOME/.cache"
+
 export VISUAL=vim
 export EDITOR=vim
 
@@ -117,11 +127,7 @@ if [ -d "$HOME/bin" ]; then
 fi
 
 # Keep these commands at the end of the file
-[ -s "$HOME/.fzf.bash" ] && source "$HOME/.fzf.bash"
 [ -d "$HOME/.sdkman" ] && export SDKMAN_DIR="$HOME/.sdkman"
 [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-
-
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+[ -f "$HOME/.local/share/cargo/env" ] && source "$HOME/.local/share/cargo/env"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash

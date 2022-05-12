@@ -1,6 +1,6 @@
 " if vim-plug is not installed, get it from github
-if !filereadable(expand('~/.vim/autoload/plug.vim'))
-    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+if !filereadable(expand('~/.config/nvim/autoload/plug.vim'))
+    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
@@ -8,7 +8,7 @@ endif
 """
 """ PLUGINS
 """
-call plug#begin('~/.vim/plugged')
+call plug#begin('~/.config/nvim/plugged')
 
 Plug 'tpope/vim-sensible'
 
@@ -54,6 +54,7 @@ if has('nvim')
 endif
 
 Plug 'towolf/vim-helm'
+Plug 'christoomey/vim-tmux-navigator'
 
 call plug#end()
 

@@ -44,3 +44,5 @@ fi
 
 alias diskspace='du -S | sort -n -r | more'
 alias vim='nvim'
+alias vimdiff='nvim -d'
+
