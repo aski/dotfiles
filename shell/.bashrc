@@ -18,7 +18,7 @@ HISTSIZE=10000
 HISTIGNORE="ls:ps:history:exit"
 
 # Avoid duplicates in history
-HISTCONTROL=ignoredups:erasedups
+HISTCONTROL=ignoredups:erasedups:ignorespace
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
@@ -69,8 +69,8 @@ esac
 
 # Set colors for the ls command
 if [ -x /usr/bin/dircolors ]; then
-    if [ -f ~/.dircolors ]; then
-        eval "$(dircolors -b ~/.dircolors)"
+    if [ -f ~/.config/.dir_colors ]; then
+        eval "$(dircolors -b ~/.config/.dir_colors)"
     else
         eval "$(dircolors -b)"
     fi
@@ -95,14 +95,14 @@ git_branch_dirty() {
 }
 
 parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
 }
 
 # Set up prompt
 if [[ "$(uname -o)" != "Msys" ]]; then
-    export PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]$(parse_git_branch)$(git_branch_dirty)\n> '
+    export PS1='\[\e[34m\]\w\[\e[0m\]\e[0;0m\]$(parse_git_branch)\[\e[0m\]\[\e[35m\]$(git_branch_dirty)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
 else
-    export PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n> '
+    export PS1='\[\e[34m\]\w\[\e[0m\]\n❯ '
 fi
 
 # Make man pages easier to read
@@ -113,11 +113,6 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
-
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_STATE_HOME="$HOME/.local/state"
-export XDG_CACHE_HOME="$HOME/.cache"
 
 export VISUAL=vim
 export EDITOR=vim
