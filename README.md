@@ -7,5 +7,5 @@ git clone https://github.com/aski/dotfiles.git ~/.dotfiles
 ~/.dotfiles/setup.sh
 
 # install various apps into ~/bin
-~/.dotfiles/setup-apps.sh
+~/.dotfiles/setup-tools.sh
 ```
