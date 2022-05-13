@@ -58,7 +58,7 @@ export HISTFILE="$XDG_STATE_HOME"/zsh/history
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # Load local customizations from zshrc.local
-[ -f "$ZDOTDIR/zshrc.local" ] && source "$ZDOTDIR/zshrc.local"
+[ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
 
 [ -f "$XDG_CONFIG_HOME/fzf/fzf.zsh" ] && source "$XDG_CONFIG_HOME/fzf/fzf.zsh"
 
