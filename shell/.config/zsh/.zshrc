@@ -1,8 +1,3 @@
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_STATE_HOME="$HOME/.local/state"
-export XDG_CACHE_HOME="$HOME/.cache"
-
 # Download zplug if it is not installed
 export ZPLUG_HOME="$XDG_DATA_HOME/zplug"
 export ZPLUG_ROOT="$XDG_DATA_HOME/zplug"
