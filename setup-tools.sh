@@ -10,6 +10,13 @@ RG_VERSION=13.0.0
 NVIM_VERSION=v0.7.0
 SHELLCHECK_VERSION=v0.8.0
 
+if test ! -d "$HOME/bin/fzf.d";
+then
+    git clone -q --depth 1 --branch master \
+        --single-branch https://github.com/junegunn/fzf "$HOME/bin/fzf.d"
+    "$HOME/bin/fzf.d/install" --all --xdg --no-update-rc
+fi
+
 if test ! -f "$HOME/bin/aws";
 then
     echo -en "Installing AWS CLI v2 ... "

@@ -35,7 +35,6 @@ endif
 Plug 'itchyny/lightline.vim'
 Plug 'luochen1990/rainbow'
 
-Plug 'junegunn/fzf', { 'dir': '~/.local/share/fzf', 'do': './install --all --xdg --no-update-rc' }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-easy-align'
 

@@ -8,13 +8,6 @@ if [[ ! -d "$ZPLUG_HOME" ]]; then
     source "$ZPLUG_HOME/init.zsh" && zplug update
 fi
 
-# Download fzf command-line fuzzy finder if it is not installed
-if [[ ! -d "$XDG_DATA_HOME/fzf" ]]; then
-    git clone -q --depth 1 --branch master \
-        --single-branch https://github.com/junegunn/fzf "$XDG_DATA_HOME/fzf"
-    "$XDG_DATA_HOME/fzf/install" --all --xdg --no-update-rc
-fi
-
 source "$ZPLUG_HOME/init.zsh"
 zplug "zplug/zplug"
 zplug "yous/vanilli.sh"
