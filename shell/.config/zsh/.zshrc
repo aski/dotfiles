@@ -1,23 +1,11 @@
-# Download zplug if it is not installed
-export ZPLUG_HOME="$XDG_DATA_HOME/zplug"
-export ZPLUG_ROOT="$XDG_DATA_HOME/zplug"
+ZSH_PLUGINS="$HOME/.local/share/zsh/plugins"
 
-if [[ ! -d "$ZPLUG_HOME" ]]; then
-    git clone -q --depth 1 --branch master \
-        --single-branch https://github.com/zplug/zplug "$ZPLUG_HOME"
-    source "$ZPLUG_HOME/init.zsh" && zplug update
-fi
-
-source "$ZPLUG_HOME/init.zsh"
-zplug "zplug/zplug"
-zplug "yous/vanilli.sh"
-zplug "zsh-users/zsh-completions"
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-syntax-highlighting", defer:3
-zplug "mafredri/zsh-async", from:github
-zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
-zplug check --verbose || zplug install
-zplug load
+source "$ZSH_PLUGINS/yous/vanilli.sh/vanilli.zsh"
+source "$ZSH_PLUGINS/zsh-users/zsh-completions/zsh-completions.plugin.zsh"
+source "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
+source "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
+source "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
+source "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
 
 setopt nohist_findnodups
 setopt inc_append_history
