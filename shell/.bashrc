@@ -100,7 +100,7 @@ parse_git_branch() {
 
 # Set up prompt
 if [[ "$(uname -o)" != "Msys" ]]; then
-    export PS1='\[\e[34m\]\w\[\e[0m\]\e[0;0m\]$(parse_git_branch)\[\e[0m\]\[\e[35m\]$(git_branch_dirty)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
+    export PS1='\[\e[34m\]\w\[\e[0m\]\e[38;5;241m\]$(parse_git_branch)\[\e[0m\]\[\e[35m\]$(git_branch_dirty)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
 else
     export PS1='\[\e[34m\]\w\[\e[0m\]\n❯ '
 fi
