@@ -1,62 +1,3 @@
-" if vim-plug is not installed, get it from github
-if !filereadable(expand('~/.config/nvim/autoload/plug.vim'))
-    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
-"""
-""" PLUGINS
-"""
-call plug#begin('~/.config/nvim/plugged')
-
-Plug 'tpope/vim-sensible'
-
-Plug 'tpope/vim-commentary'
-
-" does not work in nvim with traditional syntax highlighting switched off
-Plug 'tpope/vim-endwise'
-
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-git'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-unimpaired'
-
-Plug 'dense-analysis/ale'
-
-Plug 'vimwiki/vimwiki'
-
-if has('nvim')
-    Plug 'andersevenrud/nordic.nvim'
-else
-    Plug 'arcticicestudio/nord-vim'
-endif
-
-Plug 'itchyny/lightline.vim'
-Plug 'luochen1990/rainbow'
-
-Plug 'junegunn/fzf.vim'
-Plug 'junegunn/vim-easy-align'
-
-Plug 'pearofducks/ansible-vim'
-Plug 'vim-ruby/vim-ruby'
-Plug 'vim-scripts/groovyindent-unix'
-Plug 'pedrohdz/vim-yaml-folds'
-Plug 'rust-lang/rust.vim'
-
-if has('nvim')
-    Plug 'nvim-treesitter/nvim-treesitter'
-    Plug 'nvim-lua/plenary.nvim'
-    Plug 'nvim-telescope/telescope.nvim'
-    Plug 'neovim/nvim-lspconfig'
-    Plug 'kyazdani42/nvim-tree.lua'
-endif
-
-Plug 'towolf/vim-helm'
-Plug 'christoomey/vim-tmux-navigator'
-
-call plug#end()
-
 """
 """ CONFIG FLAGS
 """
@@ -64,11 +5,7 @@ set termguicolors
 
 set background=dark
 
-if has('nvim')
-    colorscheme nordic
-else
-    colorscheme nord
-endif
+colorscheme nordic
 
 set cursorline                                                                          " highlight current line
 set shortmess=a                                                                         " abbreviate some of the stuff shown in cmd line
@@ -118,7 +55,6 @@ end
 set spelllang=en_us
 set nospell
 
-
 """
 """ GLOBALS
 """
@@ -163,17 +99,10 @@ let mapleader = ","                                                             
 
 nnoremap <leader><space> :nohlsearch<CR>                                                " set key to turn off search highlighting
 
-if has('nvim')
-    nnoremap <leader>ff <cmd>Telescope find_files<cr>
-    nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-    nnoremap <leader>fb <cmd>Telescope buffers<cr>
-    nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-else
-    nnoremap <leader>ff :Files<CR>
-    nnoremap <leader>fw :Windows<CR>
-    nnoremap <leader>fb :Buffers<CR>
-    nnoremap <leader>fl :Lines<CR>
-endif
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 nmap <silent><leader>ev :edit ~/.vimrc<CR>                                             " set key to quickly open vimrc in new buffer
 nmap <silent><leader>sv :source ~/.vimrc<CR>                                           " set key to source vimrc
@@ -226,6 +155,5 @@ augroup END
 """
 """ NVIM LUA
 """
-if has('nvim')
-    lua require('aski')
-endif
+lua require('plugins')
+lua require('config')
