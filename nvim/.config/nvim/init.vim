@@ -11,6 +11,7 @@ set cursorline                                                                  
 set shortmess=a                                                                         " abbreviate some of the stuff shown in cmd line
 set shortmess+=t                                                                        " abbreviate file name in cmd line if too long
 set shortmess+=I                                                                        " hide startup message
+set shortmess+=F
 set number                                                                              " hide normal line numbers
 set relativenumber                                                                      " show relative line numbers
 set numberwidth=3                                                                       " minimum width of line number column
@@ -47,6 +48,7 @@ set noswapfile
 set lazyredraw
 set synmaxcol=3000
 set noshowmode                                                                          " mode is already visible in status bar
+set cmdheight=0
 
 if filereadable('/usr/share/dict/words')
     set dictionary+=/usr/share/dict/words
@@ -103,6 +105,8 @@ nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
+nnoremap <leader>tt <cmd>NvimTreeToggle<cr>
 
 nmap <silent><leader>ev :edit ~/.vimrc<CR>                                             " set key to quickly open vimrc in new buffer
 nmap <silent><leader>sv :source ~/.vimrc<CR>                                           " set key to source vimrc

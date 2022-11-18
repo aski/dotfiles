@@ -31,7 +31,7 @@ require("nvim-tree").setup {
   sort_by = "name",
   update_cwd = false,
   view = {
-    width = 30,
+    width = 40,
     side = "left",
     preserve_window_proportions = false,
     number = false,
@@ -88,7 +88,7 @@ require("nvim-tree").setup {
   },
   git = {
     enable = true,
-    ignore = true,
+    ignore = false,
     timeout = 400,
   },
   actions = {
