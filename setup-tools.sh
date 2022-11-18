@@ -7,7 +7,7 @@ HADOLINT_VERSION=v2.10.0
 HELM_VERSION=v3.8.2
 KUBECTL_VERSION=v1.23.6
 RG_VERSION=13.0.0
-NVIM_VERSION=v0.7.0
+NVIM_VERSION=v0.8.1
 SHELLCHECK_VERSION=v0.8.0
 
 if test ! -d "$HOME/bin/fzf.d";
@@ -103,8 +103,9 @@ fi
 
 if test ! -d "$HOME/bin/neovim";
 then
-    curl --output-dir /tmp -LO "https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz"
-    curl --output-dir /tmp -LO "https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz.sha256sum"
+    echo -en "Installing NEOVIM... "
+    curl --output-dir /tmp -sLO "https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz"
+    curl --output-dir /tmp -sLO "https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz.sha256sum"
     (cd /tmp && sha256sum "nvim-linux64.tar.gz.sha256sum" -c --quiet)
     mkdir -p "$HOME/bin/neovim"
     tar -C "$HOME/bin/neovim" --strip-components=1 -xf /tmp/nvim-linux64.tar.gz
