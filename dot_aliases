@@ -30,8 +30,6 @@ alias mci='mvn clean install -DskipTests'
 
 alias vssh='vagrant ssh'
 
-alias less='less -r'
-
 if [[ "$(uname -o)" == "Msys" ]]; then
   alias open='start'
 fi
