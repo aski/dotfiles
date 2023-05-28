@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "ZSH plugin installation..."
+
 PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
 mkdir -p "$PLUGINS_DIR"
 
@@ -26,3 +28,5 @@ fi
 if [ ! -d "$PLUGINS_DIR/sindresorhus/pure" ]; then
     git clone https://github.com/sindresorhus/pure.git "$PLUGINS_DIR/sindresorhus/pure"
 fi
+
+echo "DONE"

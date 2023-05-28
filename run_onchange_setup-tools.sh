@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Tools installation"
+echo "Tools installation..."
 
 #################
 # FZF
@@ -163,3 +163,5 @@ if [ ! -f "$HOME/bin/shellcheck" ]; then
         "shellcheck-$SHELLCHECK_VERSION/shellcheck"
     rm /tmp/shellcheck-$SHELLCHECK_VERSION.linux.x86_64.tar.xz
 fi
+
+echo "DONE"
