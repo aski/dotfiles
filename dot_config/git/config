@@ -58,3 +58,5 @@ stash-all     = stash save --include-untracked
 glog          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
 prune         = fetch --prune
 squash-all    = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"
+
+# vim: set filetype=gitconfig foldmethod=indent :

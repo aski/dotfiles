@@ -1,11 +1,11 @@
 ZSH_PLUGINS="$HOME/.local/share/zsh/plugins"
 
-source "$ZSH_PLUGINS/yous/vanilli.sh/vanilli.zsh"
-source "$ZSH_PLUGINS/zsh-users/zsh-completions/zsh-completions.plugin.zsh"
-source "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-source "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
-source "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
-source "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
+. "$ZSH_PLUGINS"/yous/vanilli.sh/vanilli.zsh
+. "$ZSH_PLUGINS/zsh-users/zsh-completions/zsh-completions.plugin.zsh"
+. "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
+. "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
+. "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
+. "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
 
 setopt inc_append_history
 setopt nohist_findnodups
@@ -29,3 +29,5 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 [ -d "$HOME/bin/sdkman" ] && export SDKMAN_DIR="$HOME/bin/sdkman"
 
 [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# vim: set filetype=zsh :

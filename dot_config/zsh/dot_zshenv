@@ -10,3 +10,5 @@ export PAGER='less'
 export PATH=$HOME/bin/node/bin:$HOME/bin:$PATH
 export VISUAL='nvim'
 export LESS='-R'
+
+# vim: set filetype=zsh :

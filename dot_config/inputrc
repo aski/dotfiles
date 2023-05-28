@@ -26,3 +26,6 @@ set output-meta on
 set convert-meta on
 
 Tab: menu-complete
+
+
+# vim: set filetype=readline foldmethod=marker :

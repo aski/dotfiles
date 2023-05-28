@@ -126,3 +126,5 @@ fi
 [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 [ -f "$HOME/.local/share/cargo/env" ] && source "$HOME/.local/share/cargo/env"
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
+
+# vim: set filetype=bash :
