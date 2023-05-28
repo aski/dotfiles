@@ -5,10 +5,10 @@
 sh -c "$(curl -fsLS get.chezmoi.io)"
 
 # install zsh plugins
-$(chezmoi source-path)/setup-zsh-plugins.sh
+$($HOME/bin/chezmoi source-path)/setup-zsh-plugins.sh
 
 # install various apps into ~/bin
-$(chezmoi source-path)/setup-tools.sh
+$($HOME/bin/chezmoi source-path)/setup-tools.sh
 
 # clone dotfiles repo
 chezmoi init aski
