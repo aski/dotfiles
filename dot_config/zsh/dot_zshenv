@@ -1,0 +1,12 @@
+export ANSIBLE_NOCOWS=1
+export EDITOR='nvim'
+export HISTFILE="$XDG_STATE_HOME"/zsh/history
+export INPUTRC="$XDG_CONFIG_HOME/inputrc"
+export LANG="en_US"
+export LC_ALL="en_US.UTF-8"
+export MANPAGER="nvim +Man!"
+export MAVEN_OPTS='-Xmx4096m -Xms1024m -XX:PermSize=512m -XX:MaxPermSize=512m'
+export PAGER='less'
+export PATH=$HOME/bin/node/bin:$HOME/bin:$PATH
+export VISUAL='nvim'
+export LESS='-R'

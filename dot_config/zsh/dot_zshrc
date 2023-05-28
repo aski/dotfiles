@@ -17,19 +17,6 @@ command -v chezmoi >/dev/null 2>&1 && source <(chezmoi completion zsh)
 command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 
-export ANSIBLE_NOCOWS=1
-export EDITOR='nvim'
-export HISTFILE="$XDG_STATE_HOME"/zsh/history
-export INPUTRC="$XDG_CONFIG_HOME/inputrc"
-export LANG="en_US"
-export LC_ALL="en_US.UTF-8"
-export MANPAGER="nvim +Man!"
-export MAVEN_OPTS='-Xmx4096m -Xms1024m -XX:PermSize=512m -XX:MaxPermSize=512m'
-export PAGER='less'
-export PATH=$HOME/bin/node/bin:$HOME/bin:$PATH
-export VISUAL='nvim'
-export LESS='-R'
-
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
 
 [ -f  "$XDG_CONFIG_HOME/.dir_colors" ] && eval $(dircolors "$XDG_CONFIG_HOME/.dir_colors")
