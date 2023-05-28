@@ -2,6 +2,8 @@
 
 set -e
 
+echo "Tools installation"
+
 #################
 # FZF
 #################
