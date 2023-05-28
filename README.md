@@ -1,11 +1,18 @@
 # Dotfiles
 
 ```sh
-git clone https://github.com/aski/dotfiles.git ~/.dotfiles
+# install chezmoi
+sh -c "$(curl -fsLS get.chezmoi.io)"
 
-# install configuration files
-~/.dotfiles/setup.sh
+# install zsh plugins
+$(chezmoi source-path)/setup-zsh-plugins.sh
 
 # install various apps into ~/bin
-~/.dotfiles/setup-tools.sh
+$(chezmoi source-path)/setup-tools.sh
+
+# clone dotfiles repo
+chezmoi init aski
+
+# apply configuration to local system
+chezmoi apply
 ```
