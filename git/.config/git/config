@@ -36,9 +36,6 @@ prompt        = false
 [help]
 autocorrect   = 1
 
-[pager]
-diff          =
-
 [push]
 default       = simple
 
