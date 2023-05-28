@@ -20,6 +20,6 @@ packages=(
 
 for p in "${packages[@]}"; do
     echo "# $p"
-    stow -vv "$p"
+    stow -v "$p"
     echo -e ""
 done
