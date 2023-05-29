@@ -1,8 +1,8 @@
--- Set <space> as the leader key
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
 
--- Install package manager
+-- [[ Install plugin manager and plugins ]]
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -16,36 +16,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Install plugins
 require('lazy').setup({
-  'dense-analysis/ale',
-
-  'lewis6991/gitsigns.nvim',
-
-  {
-    'shaunsingh/nord.nvim',
-    priority = 1000,
-    config = function ()
-      vim.g.nord_contrast = true
-      vim.g.nord_italic = false
-      vim.g.nord_uniform_diff_background = true
-      vim.g.nord_bold = false
-      vim.cmd.colorscheme 'nord'
-    end,
-  },
-
-  {
-    'nvim-lualine/lualine.nvim',
-    opts = {
-      options = {
-        icons_enabled = false,
-        theme = 'nord',
-        component_separators = '|',
-        section_separators = '',
-      },
-    },
-  },
-
+  { 'shaunsingh/nord.nvim', priority = 1000, },
+  { 'dense-analysis/ale', },
+  { 'lewis6991/gitsigns.nvim', },
+  { 'nvim-lualine/lualine.nvim', },
   {
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
@@ -53,7 +28,6 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
-
   {
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
@@ -63,7 +37,12 @@ require('lazy').setup({
   },
 })
 
--- [[ Setting options ]]
+-- [[ Set options ]]
+
+-- Configure and set colorscheme
+vim.g.nord_italic = false
+vim.g.nord_bold = false
+require('nord').set()
 
 -- Show cursor line
 vim.wo.cursorline = true
@@ -134,15 +113,16 @@ vim.o.showmode = false
 -- When splitting a window, put the new one on the right
 vim.o.splitright = true
 
--- [[ Configure Telescope ]]
+-- [[ Configure Lualine ]]
 
-require('telescope').setup {}
-
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = '[F]ind [F]iles' })
-vim.keymap.set('n', '<leader>fg', require('telescope.builtin').git_files, { desc = '[F]ind [G]it Files' })
-vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = '[F]ind [H]elp' })
+require('lualine').setup {
+  options = {
+    icons_enabled = false,
+    theme = 'nord',
+    component_separators = '|',
+    section_separators = '',
+  },
+}
 
 -- [[ Configure Treesitter ]]
 
@@ -156,5 +136,14 @@ require('nvim-treesitter.configs').setup {
     enable = true,
   },
 }
+
+-- [[ Configure Telescope ]]
+
+require('telescope').setup {}
+vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = '[F]ind [F]iles' })
+vim.keymap.set('n', '<leader>fg', require('telescope.builtin').git_files, { desc = '[F]ind [G]it Files' })
+vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = '[F]ind [H]elp' })
 
 -- vim: ts=2 sts=2 sw=2 et
