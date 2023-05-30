@@ -16,33 +16,9 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-  { 'shaunsingh/nord.nvim', priority = 1000, },
-  { 'dense-analysis/ale', },
-  { 'lewis6991/gitsigns.nvim', },
-  { 'nvim-lualine/lualine.nvim', },
-  {
-    'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
-    build = ':TSUpdate',
-  },
-  {
-    'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
-  },
-})
+require('lazy').setup("plugins")
 
 -- [[ Set options ]]
-
--- Configure and set colorscheme
-vim.g.nord_italic = false
-vim.g.nord_bold = false
-require('nord').set()
 
 -- Show cursor line
 vim.wo.cursorline = true
@@ -112,38 +88,5 @@ vim.o.showmode = false
 
 -- When splitting a window, put the new one on the right
 vim.o.splitright = true
-
--- [[ Configure Lualine ]]
-
-require('lualine').setup {
-  options = {
-    icons_enabled = false,
-    theme = 'nord',
-    component_separators = '|',
-    section_separators = '',
-  },
-}
-
--- [[ Configure Treesitter ]]
-
-require('nvim-treesitter.configs').setup {
-  ensure_installed = 'all',
-  auto_install = false,
-  highlight = {
-    enable = true,
-  },
-  indent = {
-    enable = true,
-  },
-}
-
--- [[ Configure Telescope ]]
-
-require('telescope').setup {}
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = '[F]ind [F]iles' })
-vim.keymap.set('n', '<leader>fg', require('telescope.builtin').git_files, { desc = '[F]ind [G]it Files' })
-vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = '[F]ind [H]elp' })
 
 -- vim: ts=2 sts=2 sw=2 et
