@@ -8,7 +8,6 @@
 [core]
     autocrlf      = input
     commitGraph   = true
-    editor        = nvim
     page          = less -FRSX
     quotepath     = false
 
@@ -62,5 +61,13 @@
     glog          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
     prune         = fetch --prune
     squash-all    = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"
+
+{{ if eq .chezmoi.os "windows" }}
+[http]
+    sslbackend = schannel
+
+[credential "helperselector"]
+    selected = wincred
+{{ end }}
 
 # vim: set filetype=gitconfig foldmethod=indent :
