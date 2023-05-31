@@ -21,34 +21,34 @@ require('lazy').setup("plugins")
 -- [[ Set options ]]
 
 -- Show cursor line
-vim.wo.cursorline = true
+vim.o.cursorline = true
 
 -- Enable line numbers
-vim.wo.number = true
+vim.o.number = true
 
 -- Keep signcolumn on by default
-vim.wo.signcolumn = 'yes'
+vim.o.signcolumn = 'yes'
 
 -- Show tabs and trailing spaces
-vim.wo.list = true
+vim.o.list = true
 
 -- Do not wrap long lines by default
-vim.wo.wrap = false
+vim.o.wrap = false
 
 -- Break lines at 120 characters
-vim.bo.textwidth = 120
+vim.o.textwidth = 120
 
 -- Tab counts for 4 spaces
-vim.bo.tabstop = 4
+vim.o.tabstop = 4
 
 -- Number of spaces to use for each step of indent
-vim.bo.shiftwidth = 4
+vim.o.shiftwidth = 4
 
 -- Tab counts for 4 spaces while performing editing operations
-vim.bo.softtabstop = 4
+vim.o.softtabstop = 4
 
 -- In insert mode: use spaces to insert a tab
-vim.bo.expandtab = true
+vim.o.expandtab = true
 
 --
 vim.o.wildmode = 'list:longest,list:full'
