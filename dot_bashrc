@@ -23,9 +23,6 @@ HISTCONTROL=ignoredups:erasedups:ignorespace
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
 
-# After each command, append to the history file and reread it
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
-
 # Save all lines of a multi-line command in the same history entry
 shopt -s cmdhist
 
@@ -43,9 +40,6 @@ shopt -s autocd
 shopt -s histverify
 
 if [ "$UID" != 0 ]; then
-    # Automatically correct misspelled directory names
-    shopt -s cdspell
-
     # Case insensitive globbing (used in pathname expansion)
     shopt -s nocaseglob
 fi
@@ -57,15 +51,6 @@ fi
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
 
 # Set colors for the ls command
 if [ -x /usr/bin/dircolors ]; then
@@ -102,7 +87,7 @@ parse_git_branch() {
 if [[ "$(uname -o)" != "Msys" ]]; then
     export PS1='\[\e[34m\]\w\[\e[0m\]\e[38;5;241m\]$(parse_git_branch)\[\e[0m\]\[\e[35m\]$(git_branch_dirty)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
 else
-    export PS1='\[\e[34m\]\w\[\e[0m\]\n❯ '
+    export PS1='\[\e[34m\]\w\[\e[0m\] `__git_ps1` ❯ '
 fi
 
 # Make man pages easier to read
@@ -134,6 +119,17 @@ _ssh()
 }
 
 complete -F _ssh ssh
+
+export ANSIBLE_NOCOWS=1
+export EDITOR='nvim'
+export INPUTRC="$XDG_CONFIG_HOME/inputrc"
+export LANG="en_US"
+export LC_ALL="en_US.UTF-8"
+export MANPAGER="nvim +Man!"
+export MAVEN_OPTS='-Xmx4096m -Xms1024m -XX:PermSize=512m -XX:MaxPermSize=512m'
+export PAGER='less'
+export VISUAL='nvim'
+export LESS='-R'
 
 # Keep these commands at the end of the file
 [ -s "$HOME/.fzf.bash" ] && source "$HOME/.fzf.bash"
