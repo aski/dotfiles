@@ -1,5 +1,5 @@
 alias ls='ls --color=auto'
-alias ll='ls -alF'
+alias ll='ls -l --human-readable --color=auto --group-directories-first --classify'
 alias la='ls -A'
 alias l='ls -CF'
 alias sl='ls'
@@ -17,6 +17,7 @@ alias g='git'
 alias gti='git'
 alias ga='git add'
 
+alias vim='nvim'
 alias vi='vim'
 alias v='vim'
 
@@ -39,7 +40,6 @@ if [ "$(uname -s)" = "Linux" ]; then
 fi
 
 alias diskspace='du -S | sort -n -r | more'
-alias vim='nvim'
 alias vimdiff='nvim -d'
 
 # vim: set filetype=sh :
