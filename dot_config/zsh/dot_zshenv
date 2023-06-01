@@ -11,4 +11,11 @@ export PATH=$HOME/bin/node/bin:$HOME/bin:$PATH
 export VISUAL='nvim'
 export LESS='-R'
 
+if command -v fd &> /dev/null; then
+    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
+    export FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix'
+    export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix'
+fi
+
+
 # vim: set filetype=zsh :
