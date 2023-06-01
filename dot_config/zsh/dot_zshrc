@@ -13,9 +13,12 @@ setopt share_history
 
 set -o emacs
 
+bindkey -M emacs '^H' backward-kill-word
+
 command -v chezmoi >/dev/null 2>&1 && source <(chezmoi completion zsh)
 command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
+
 
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
 
