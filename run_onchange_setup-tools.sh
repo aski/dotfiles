@@ -162,7 +162,6 @@ if [ ! -d "$HOME/bin/neovim" ]; then
 fi
 
 ln -sf "$HOME/bin/neovim/bin/nvim" "$HOME/bin/nvim"
-ln -sf "$HOME/bin/neovim/bin/nvim" "$HOME/bin/vim"
 
 #################
 # SHELLCHECK
