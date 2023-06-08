@@ -1,5 +1,5 @@
 vim.bo.tabstop = 2
 vim.bo.softtabstop = 2
 vim.bo.shiftwidth = 2
-vim.bo.foldlevel = 4
+vim.wo.foldlevel = 4
 vim.bo.expandtab = true
