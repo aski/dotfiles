@@ -17,8 +17,8 @@ HISTSIZE=10000
 # List of commands that shouldn't be added to the history
 HISTIGNORE="ls:ps:history:exit"
 
-# Avoid duplicates in history
-HISTCONTROL=ignoredups:erasedups:ignorespace
+# Exclude commands with space from history
+HISTCONTROL=ignorespace
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
@@ -126,7 +126,7 @@ export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 export MANPAGER="nvim +Man!"
-export MAVEN_OPTS='-Xmx4096m -Xms1024m -XX:PermSize=512m -XX:MaxPermSize=512m'
+export MAVEN_OPTS='-Xmx4096m -Xms1024m'
 export PAGER='less'
 export VISUAL='nvim'
 export LESS='-R'
