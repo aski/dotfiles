@@ -7,7 +7,7 @@ export LC_ALL="en_US.UTF-8"
 export MANPAGER="nvim +Man!"
 export MAVEN_OPTS='-Xmx4096m -Xms1024m'
 export PAGER='less'
-export PATH=$HOME/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 export VISUAL='nvim'
 export LESS='-R'
 

@@ -14,7 +14,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-endwise'
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 
 Plug 'arcticicestudio/nord-vim'
@@ -182,28 +182,10 @@ augroup ft_latex
     autocmd BufRead *.tex setlocal spell spelllang=en_nz
 augroup END
 
-augroup ft_javascript
-    autocmd!
-    autocmd fileType javascript setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-    autocmd fileType vue setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-augroup END
-
-augroup ft_yaml
-    autocmd!
-    autocmd FileType yml,yaml setlocal ts=2 sts=2 sw=2 foldlevel=2 expandtab
-augroup END
-
 augroup ft_ruby
     autocmd!
     autocmd BufRead,BufNewFile *.erb set filetype=eruby
     autocmd BufRead,BufNewFile */cookbooks/*/*.rb set filetype=ruby.chef
-    autocmd FileType ruby,ruby.chef setlocal ts=2 sts=2 sw=2 expandtab
-augroup END
-
-augroup ft_markdown
-    autocmd!
-    autocmd BufNewFile,BufReadPost *.md set ft=markdown
-    autocmd FileType markdown setlocal ts=4 sts=4 sw=4 wrap
 augroup END
 
 augroup ft_git
@@ -223,15 +205,3 @@ augroup ft_groovy
     autocmd!
     autocmd BufRead,BufNewFile Jenkinsfile set ft=groovy
 augroup END
-
-if has('win32')
-    com! FormatXML :%!python3 -c "import xml.dom.minidom, sys, os; print('\n'.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
-else
-    com! FormatXML :%!python -c "import xml.dom.minidom, sys, os; print('\n'.join([s for s in xml.dom.minidom.parse(sys.stdin).toprettyxml(indent='  ').strip().splitlines() if s.strip()]))"
-end
-
-nnoremap = :FormatXML<Cr>
-
-let g:ale_pattern_options = {'\.py$': {'ale_enabled': 0}}
-
-

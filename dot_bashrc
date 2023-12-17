@@ -17,8 +17,8 @@ HISTSIZE=10000
 # List of commands that shouldn't be added to the history
 HISTIGNORE="ls:ps:history:exit"
 
-# Exclude commands with space from history
-HISTCONTROL=ignorespace
+# Avoid duplicates in history
+HISTCONTROL=ignoredups:erasedups:ignorespace
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
