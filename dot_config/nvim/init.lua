@@ -89,13 +89,4 @@ vim.o.showmode = false
 -- When splitting a window, put the new one on the right
 vim.o.splitright = true
 
-local lsp = require('lsp-zero').preset({})
-
-lsp.on_attach(function(client, bufnr)
-  lsp.default_keymaps({buffer = bufnr})
-end)
-
-lsp.setup()
-
-
 -- vim: ts=2 sts=2 sw=2 et
