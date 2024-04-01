@@ -515,6 +515,9 @@ require('lazy').setup({
       })
     end,
   },
+  {
+    'tpope/vim-fugitive',
+  },
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {
