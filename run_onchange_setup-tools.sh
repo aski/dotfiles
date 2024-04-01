@@ -167,8 +167,8 @@ ln -sf "$HOME/bin/neovim/bin/nvim" "$HOME/bin/nvim"
 # SHELLCHECK
 #################
 
-SC_VERSION=v0.8.0
-SC_SHA256=ab6ee1b178f014d1b86d1e24da20d1139656c8b0ed34d2867fbb834dad02bf0a
+SC_VERSION=v0.10.0
+SC_SHA256=6c881ab0698e4e6ea235245f22832860544f17ba386442fe7e9d629f8cbedf87
 SC_URL="https://github.com/koalaman/shellcheck/releases/download/$SC_VERSION/shellcheck-$SC_VERSION.linux.x86_64.tar.xz"
 
 if [ ! -f "$HOME/bin/shellcheck" ]; then
