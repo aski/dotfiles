@@ -213,7 +213,17 @@ require('lazy').setup({
       { 'williamboman/mason-lspconfig.nvim' },
       { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
       { 'j-hui/fidget.nvim', opts = {} },
-      { 'folke/neodev.nvim', opts = {} },
+      {
+        'folke/neodev.nvim',
+        opts = {
+          override = function(root_dir, library)
+            if root_dir:find(vim.fn.expand '$HOME' .. '/.local/share/chezmoi/dot_config/nvim', 1, true) == 1 then
+              library.enabled = true
+              library.plugins = true
+            end
+          end,
+        },
+      },
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -326,6 +336,17 @@ require('lazy').setup({
 
   { -- Autoformat
     'stevearc/conform.nvim',
+    lazy = false,
+    keys = {
+      {
+        '<leader>f',
+        function()
+          require('conform').format { async = true, lsp_fallback = true }
+        end,
+        mode = '',
+        desc = '[F]ormat buffer',
+      },
+    },
     opts = {
       notify_on_error = false,
       log_level = vim.log.levels.DEBUG,
@@ -437,12 +458,7 @@ require('lazy').setup({
     end,
   },
 
-  {
-    'folke/todo-comments.nvim',
-    event = 'VimEnter',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = { signs = false },
-  },
+  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   {
     'echasnovski/mini.nvim',
@@ -476,6 +492,25 @@ require('lazy').setup({
     config = function(_, opts)
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
+    end,
+  },
+
+  { -- Linting
+    'mfussenegger/nvim-lint',
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = function()
+      local lint = require 'lint'
+      lint.linters_by_ft = {
+        sh = { 'shellcheck' },
+      }
+
+      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
+      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+        group = lint_augroup,
+        callback = function()
+          require('lint').try_lint()
+        end,
+      })
     end,
   },
 }, {
