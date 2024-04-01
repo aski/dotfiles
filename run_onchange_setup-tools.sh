@@ -179,3 +179,20 @@ if [ ! -f "$HOME/bin/shellcheck" ]; then
     rm /tmp/sc.tar.xz
     echo "DONE"
 fi
+
+LAZYGIT_VERSION=0.41.0
+LAZYGIT_URL="https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+LAZYGIT_CHECKSUM_URL="https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/checksums.txt"
+LAZYGIT_FILE=$(basename $LAZYGIT_URL)
+LAZYGIT_CHECKSUM_FILE=$(basename $LAZYGIT_CHECKSUM_URL)
+
+if [ ! -f "$HOME/bin/lazygit" ]; then
+    echo -n "Installing LAZYGIT... "
+    curl -o /tmp/"$LAZYGIT_FILE" -sL "$LAZYGIT_URL"
+    curl -o /tmp/"$LAZYGIT_CHECKSUM_FILE" -sL "$LAZYGIT_CHECKSUM_URL"
+    cd /tmp && (grep "$LAZYGIT_FILE" "$LAZYGIT_CHECKSUM_FILE" | sha256sum -c --quiet)
+    mkdir -p "$HOME/bin/lazygit"
+    tar -C "$HOME/bin" -xf /tmp/"$LAZYGIT_FILE" lazygit
+    rm /tmp/"$LAZYGIT_FILE" /tmp/"$LAZYGIT_CHECKSUM_FILE"
+    echo "DONE"
+fi
