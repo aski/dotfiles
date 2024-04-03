@@ -518,7 +518,18 @@ require('lazy').setup({
   {
     'tpope/vim-fugitive',
   },
+  {
+    'aski/diary.nvim',
+    dev = true,
+    config = function()
+      vim.api.nvim_create_user_command('Diary', require('diary').diary, {})
+      vim.keymap.set('n', '<leader>ed', require('diary').diary, { desc = '[E]dit [d]iary page' })
+    end,
+  },
 }, {
+  dev = {
+    path = '~/Coding/aski',
+  },
   ui = {
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
@@ -537,16 +548,5 @@ require('lazy').setup({
     },
   },
 })
-
-local function diary()
-  local diary_file_path = vim.fn.expand('$HOME/diary/' .. os.date('%Y-%m-%d' .. '.md'))
-  vim.cmd.edit(diary_file_path)
-  vim.api.nvim_buf_set_lines(0, -1, -1, true, { '# ' .. os.date '%a %d %b %Y, %T', '' })
-  vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
-  print(vim.api.nvim_buf_get_lines(0, 0, 0, true))
-end
-
-vim.api.nvim_create_user_command('Diary', diary, {})
-vim.keymap.set('n', '<leader>ed', diary, { desc = '[E]dit [d]iary page' })
 
 -- vim: ts=2 sts=2 sw=2 et
