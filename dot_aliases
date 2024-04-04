@@ -16,6 +16,10 @@ alias egrep='egrep --color=auto'
 alias g='git'
 alias gti='git'
 alias ga='git add'
+alias gaa='git add --all'
+alias gc='git commit -v'
+alias gca='git commit -va'
+alias gcaa='git add --all && git commit -va'
 
 alias vim='nvim'
 alias vi='vim'
@@ -25,9 +29,16 @@ alias cp='cp -v'
 alias mv='mv -v'
 alias rm='rm -v -I'
 
+alias mc='mvn clean'
 alias mci='mvn clean install -DskipTests'
+alias mcit='mvn clean install'
+alias mi='mvn install -DskipTests'
+alias mit='mvn install'
 
-alias vssh='vagrant ssh'
+alias vs='vagrant ssh'
+alias vu='vagrant up'
+alias vd='vagrant destroy -f'
+alias vh='vagrant halt'
 
 if [ "$(uname -o)" = "Msys" ]; then
   alias open='start'
