@@ -63,7 +63,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 5
 
 -- [[ Basic Keymaps ]]
 
@@ -362,6 +362,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         sh = { 'shellcheck' },
+        xml = { 'xmlformat' },
         ['_'] = { 'trim_whitespace', 'trim_newlines' },
       },
     },
@@ -460,7 +461,12 @@ require('lazy').setup({
     end,
   },
 
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
+  },
 
   {
     'echasnovski/mini.nvim',
@@ -525,6 +531,9 @@ require('lazy').setup({
       vim.api.nvim_create_user_command('Diary', require('diary').diary, {})
       vim.keymap.set('n', '<leader>ed', require('diary').diary, { desc = '[E]dit [d]iary page' })
     end,
+  },
+  {
+    'ThePrimeagen/vim-be-good',
   },
 }, {
   dev = {
