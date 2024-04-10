@@ -120,6 +120,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require('lazy').setup({
+  { 'ledger/vim-ledger' },
   { 'tpope/vim-sleuth' }, -- Detect tabstop and shiftwidth automatically
 
   { 'numToStr/Comment.nvim', opts = {} },
@@ -461,12 +462,7 @@ require('lazy').setup({
     end,
   },
 
-  {
-    'folke/todo-comments.nvim',
-    event = 'VimEnter',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = { signs = false },
-  },
+  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   {
     'echasnovski/mini.nvim',
