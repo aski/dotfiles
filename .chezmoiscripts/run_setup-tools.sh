@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Tools installation..."
+
 set -e
 
 if [ "$OSTYPE" != "linux-gnu" ]; then
@@ -196,3 +198,5 @@ if [ ! -f "$HOME/bin/lazygit" ]; then
     rm /tmp/"$LAZYGIT_FILE" /tmp/"$LAZYGIT_CHECKSUM_FILE"
     echo "DONE"
 fi
+
+echo "DONE"
