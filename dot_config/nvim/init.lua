@@ -65,6 +65,8 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 5
 
+vim.opt.shellslash = true
+
 -- [[ Basic Keymaps ]]
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
