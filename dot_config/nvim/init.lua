@@ -324,7 +324,6 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua',
-        'tsserver',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -525,7 +524,7 @@ require('lazy').setup({
   },
   {
     'aski/diary.nvim',
-    dev = true,
+    dev = false,
     config = function()
       vim.api.nvim_create_user_command('Diary', require('diary').diary, {})
       vim.keymap.set('n', '<leader>ed', require('diary').diary, { desc = '[E]dit [d]iary page' })
