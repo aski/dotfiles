@@ -19,23 +19,21 @@ command -v chezmoi >/dev/null 2>&1 && source <(chezmoi completion zsh)
 command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 
-
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
+[ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
 
 [ -f  "$XDG_CONFIG_HOME/.dir_colors" ] && eval $(dircolors "$XDG_CONFIG_HOME/.dir_colors")
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-[ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
-
+# FZF
 [ -f "$XDG_CONFIG_HOME/fzf/fzf.zsh" ] && source "$XDG_CONFIG_HOME/fzf/fzf.zsh"
 
+# NODE VERSION MANAGER
+export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# SDKMAN
 [ -d "$HOME/bin/sdkman" ] && export SDKMAN_DIR="$HOME/bin/sdkman"
-
 [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
-
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-
 
 # vim: set filetype=zsh :

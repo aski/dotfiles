@@ -29,11 +29,12 @@ AWS_URL=https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 
 if [ ! -f "$HOME/bin/aws" ]; then
     echo -n "Installing AWS CLI v2 ... "
-    curl -o /tmp/awscliv2.zip -sL "$AWS_URL"
-    rm -rf /tmp/aws
-    unzip -qq /tmp/awscliv2.zip -d /tmp
-    /tmp/aws/install -u -i "$HOME/bin/aws-cli" -b "$HOME/bin" > /dev/null
-    rm -rf /tmp/aws /tmp/awscliv2.zip
+    rm -rf "$HOME/bin/aws-cli"
+    TEMP_DIR=$(mktemp -d)
+    curl -o "$TEMP_DIR/awscli.zip" -sL "$AWS_URL"
+    unzip -qq "$TEMP_DIR/awscli.zip" -d "$TEMP_DIR"
+    "$TEMP_DIR//aws/install" -u -i "$HOME/bin/aws-cli" -b "$HOME/bin" > /dev/null
+    rm -rf "$TEMP_DIR"
     echo "DONE"
 fi
 
@@ -47,11 +48,12 @@ FD_URL="https://github.com/sharkdp/fd/releases/download/$FD_VERSION/fd-$FD_VERSI
 
 if [ ! -d "$HOME/bin/fd.d" ]; then
     echo -n "Installing FD ... "
-    curl -o /tmp/fd.tar.gz -sL "$FD_URL"
-    echo "$FD_SHA256 /tmp/fd.tar.gz" | sha256sum -c --quiet
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/fd.tar.gz -sL "$FD_URL"
+    echo "$FD_SHA256 ""${TEMP_DIR}""/fd.tar.gz" | sha256sum -c --quiet
     mkdir -p "$HOME/bin/fd.d"
-    tar -C "$HOME/bin/fd.d" --strip-components=1 -xf /tmp/fd.tar.gz
-    rm /tmp/fd.tar.gz
+    tar -C "$HOME/bin/fd.d" --strip-components=1 -xf "${TEMP_DIR}"/fd.tar.gz
+    rm -rf "${TEMP_DIR}"
     echo "DONE"
 fi
 
@@ -67,12 +69,13 @@ HADOLINT_CHECKSUM_URL="https://github.com/hadolint/hadolint/releases/download/$H
 
 if [ ! -f "$HOME/bin/hadolint" ]; then
     echo -n "Installing HADOLINT ... "
-    curl -o /tmp/hadolint -sL "$HADOLINT_URL"
-    curl -o /tmp/hadolint.sha256sum -sL "$HADOLINT_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < /tmp/hadolint.sha256sum) /tmp/hadolint" | sha256sum -c --quiet
-    mv /tmp/hadolint "$HOME/bin"
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/hadolint -sL "$HADOLINT_URL"
+    curl -o "${TEMP_DIR}"/hadolint.sha256sum -sL "$HADOLINT_CHECKSUM_URL"
+    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/hadolint.sha256sum) ""${TEMP_DIR}""/hadolint" | sha256sum -c --quiet
+    mv "${TEMP_DIR}"/hadolint "$HOME/bin"
     chmod +x "$HOME/bin/hadolint"
-    rm /tmp/hadolint.sha256sum
+    rm -rf "${TEMP_DIR}"
     echo "DONE"
 fi
 
@@ -86,11 +89,12 @@ HELM_CHECKSUM_URL="https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz.sha
 
 if [ ! -f "$HOME/bin/helm" ]; then
     echo -n "Installing HELM ... "
-    curl -o /tmp/helm.tar.gz -sL "$HELM_URL"
-    curl -o /tmp/helm.sha256sum -sL "$HELM_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < /tmp/helm.sha256sum) /tmp/helm.tar.gz" | sha256sum -c --quiet
-    tar -C "$HOME/bin" --strip-components=1 -xzf "/tmp/helm.tar.gz" linux-amd64/helm
-    rm "/tmp/helm.tar.gz" "/tmp/helm.sha256sum"
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/helm.tar.gz -sL "$HELM_URL"
+    curl -o "${TEMP_DIR}"/helm.sha256sum -sL "$HELM_CHECKSUM_URL"
+    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/helm.sha256sum) ""${TEMP_DIR}""/helm.tar.gz" | sha256sum -c --quiet
+    tar -C "$HOME/bin" --strip-components=1 -xzf """${TEMP_DIR}""/helm.tar.gz" linux-amd64/helm
+    rm -rf "${TEMP_DIR}"
     echo "DONE"
 fi
 
@@ -104,12 +108,13 @@ KUBECTL_CHECKSUM_URL="https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl
 
 if [ ! -f "$HOME/bin/kubectl" ]; then
     echo -n "Installing KUBECTL ... "
-    curl -o /tmp/kubectl -sL "$KUBECTL_URL"
-    curl -o /tmp/kubectl.sha256sum -sL "$KUBECTL_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < /tmp/kubectl.sha256sum) /tmp/kubectl" | sha256sum -c --quiet
-    mv /tmp/kubectl "$HOME/bin"
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/kubectl -sL "$KUBECTL_URL"
+    curl -o "${TEMP_DIR}"/kubectl.sha256sum -sL "$KUBECTL_CHECKSUM_URL"
+    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/kubectl.sha256sum) ""${TEMP_DIR}""/kubectl" | sha256sum -c --quiet
+    mv "${TEMP_DIR}"/kubectl "$HOME/bin"
     chmod +x "$HOME/bin/kubectl"
-    rm /tmp/kubectl.sha256sum
+    rm -rf "${TEMP_DIR}"
     echo "DONE"
 fi
 
@@ -123,11 +128,12 @@ RG_URL="https://github.com/BurntSushi/ripgrep/releases/download/$RG_VERSION/ripg
 
 if [ ! -d "$HOME/bin/ripgrep" ]; then
     echo -n "Installing RG ... "
-    curl -o /tmp/rg.tar.gz -sL "$RG_URL"
-    echo "$RG_SHA256 /tmp/rg.tar.gz" | sha256sum -c --quiet
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/rg.tar.gz -sL "$RG_URL"
+    echo "$RG_SHA256 ""${TEMP_DIR}""/rg.tar.gz" | sha256sum -c --quiet
     mkdir -p "$HOME/bin/ripgrep"
-    tar -C "$HOME/bin/ripgrep" --strip-components=1 -xf /tmp/rg.tar.gz
-    rm /tmp/rg.tar.gz
+    tar -C "$HOME/bin/ripgrep" --strip-components=1 -xf "${TEMP_DIR}"/rg.tar.gz
+    rm -rf "${TEMP_DIR}"
     echo "DONE"
 fi
 
@@ -140,7 +146,7 @@ ln -sf "$HOME/bin/ripgrep/rg" "$HOME/bin/rg"
 if [ ! -d "$HOME/bin/sdkman" ]; then
     echo -n "Installing SDKMAN ... "
     export SDKMAN_DIR="$HOME/bin/sdkman" && \
-    curl -s "https://get.sdkman.io" | bash > /dev/null 2>&1
+    curl -s "https://get.sdkman.io?rcupdate=false" | bash > /dev/null 2>&1
     echo "DONE"
 fi
 
@@ -154,12 +160,13 @@ NVIM_CHECKSUM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERS
 
 if [ ! -d "$HOME/bin/neovim" ]; then
     echo -n "Installing NEOVIM... "
-    curl -o /tmp/nvim.tar.gz -sL "$NVIM_URL"
-    curl -o /tmp/nvim.sha256sum -sL "$NVIM_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < /tmp/nvim.sha256sum) /tmp/nvim.tar.gz" | sha256sum -c --quiet
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/nvim.tar.gz -sL "$NVIM_URL"
+    curl -o "${TEMP_DIR}"/nvim.sha256sum -sL "$NVIM_CHECKSUM_URL"
+    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/nvim.sha256sum) ""${TEMP_DIR}""/nvim.tar.gz" | sha256sum -c --quiet
     mkdir -p "$HOME/bin/neovim"
-    tar -C "$HOME/bin/neovim" --strip-components=1 -xf /tmp/nvim.tar.gz
-    rm /tmp/nvim.tar.gz /tmp/nvim.sha256sum
+    tar -C "$HOME/bin/neovim" --strip-components=1 -xf "${TEMP_DIR}"/nvim.tar.gz
+    rm "${TEMP_DIR}"/nvim.tar.gz "${TEMP_DIR}"/nvim.sha256sum
     echo "DONE"
 fi
 
@@ -175,12 +182,17 @@ SC_URL="https://github.com/koalaman/shellcheck/releases/download/$SC_VERSION/she
 
 if [ ! -f "$HOME/bin/shellcheck" ]; then
     echo -n "Installing SC ... "
-    curl -o /tmp/sc.tar.xz -sL "$SC_URL"
-    echo "$SC_SHA256 /tmp/sc.tar.xz" | sha256sum -c --quiet
-    tar -C "$HOME/bin" --strip-components=1 -xf "/tmp/sc.tar.xz" "shellcheck-$SC_VERSION/shellcheck"
-    rm /tmp/sc.tar.xz
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/sc.tar.xz -sL "$SC_URL"
+    echo "$SC_SHA256 ""${TEMP_DIR}""/sc.tar.xz" | sha256sum -c --quiet
+    tar -C "$HOME/bin" --strip-components=1 -xf """${TEMP_DIR}""/sc.tar.xz" "shellcheck-$SC_VERSION/shellcheck"
+    rm "${TEMP_DIR}"/sc.tar.xz
     echo "DONE"
 fi
+
+#################
+# LAZYGIT
+#################
 
 LAZYGIT_VERSION=0.41.0
 LAZYGIT_URL="https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
@@ -190,12 +202,13 @@ LAZYGIT_CHECKSUM_FILE=$(basename $LAZYGIT_CHECKSUM_URL)
 
 if [ ! -f "$HOME/bin/lazygit" ]; then
     echo -n "Installing LAZYGIT... "
-    curl -o /tmp/"$LAZYGIT_FILE" -sL "$LAZYGIT_URL"
-    curl -o /tmp/"$LAZYGIT_CHECKSUM_FILE" -sL "$LAZYGIT_CHECKSUM_URL"
-    cd /tmp && (grep "$LAZYGIT_FILE" "$LAZYGIT_CHECKSUM_FILE" | sha256sum -c --quiet)
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/"$LAZYGIT_FILE" -sL "$LAZYGIT_URL"
+    curl -o "${TEMP_DIR}"/"$LAZYGIT_CHECKSUM_FILE" -sL "$LAZYGIT_CHECKSUM_URL"
+    cd "${TEMP_DIR}" && (grep "$LAZYGIT_FILE" "$LAZYGIT_CHECKSUM_FILE" | sha256sum -c --quiet)
     mkdir -p "$HOME/bin/lazygit"
-    tar -C "$HOME/bin" -xf /tmp/"$LAZYGIT_FILE" lazygit
-    rm /tmp/"$LAZYGIT_FILE" /tmp/"$LAZYGIT_CHECKSUM_FILE"
+    tar -C "$HOME/bin" -xf "${TEMP_DIR}"/"$LAZYGIT_FILE" lazygit
+    rm "${TEMP_DIR}"/"$LAZYGIT_FILE" "${TEMP_DIR}"/"$LAZYGIT_CHECKSUM_FILE"
     echo "DONE"
 fi
 
