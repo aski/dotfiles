@@ -137,7 +137,16 @@ export VISUAL='nvim'
 export LESS='-R'
 
 # Keep these commands at the end of the file
+
+# FZF
 [ -s "${XDG_CONFIG_HOME}/fzf/fzf.bash" ] && source "${XDG_CONFIG_HOME}/fzf/fzf.bash"
-[ -s "${XDG_CONFIG_HOME}/nvm/nvm.sh" ] && source "${XDG_CONFIG_HOME}/nvm/nvm.sh"
+
+# NODE VERSION MANAGER
+export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# SDKMAN
+[ -d "$HOME/bin/sdkman" ] && export SDKMAN_DIR="$HOME/bin/sdkman"
+[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 # vim: set filetype=bash :

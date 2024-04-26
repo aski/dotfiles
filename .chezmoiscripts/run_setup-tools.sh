@@ -42,8 +42,8 @@ fi
 # FD
 #################
 
-FD_VERSION=v8.3.2
-FD_SHA256=64c43db1f6411df6dbe679d0881ac021b4fc8aec1b565a324cc6207aeada042f
+FD_VERSION=v9.0.0
+FD_SHA256=a92f77c76bca0db49810ed2333332356a2b7c6f6f19e842373e6ecfd4c180a67
 FD_URL="https://github.com/sharkdp/fd/releases/download/$FD_VERSION/fd-$FD_VERSION-x86_64-unknown-linux-gnu.tar.gz"
 
 if [ ! -d "$HOME/bin/fd.d" ]; then
@@ -83,7 +83,7 @@ fi
 # HELM
 #################
 
-HELM_VERSION=v3.8.2
+HELM_VERSION=v3.14.4
 HELM_URL="https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz"
 HELM_CHECKSUM_URL="https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz.sha256sum"
 
@@ -102,7 +102,7 @@ fi
 # KUBECTL
 #################
 
-KUBECTL_VERSION=v1.23.6
+KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 KUBECTL_URL="https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl"
 KUBECTL_CHECKSUM_URL="https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256"
 
@@ -122,15 +122,16 @@ fi
 # RIPGREP
 #################
 
-RG_VERSION=13.0.0
-RG_SHA256=ee4e0751ab108b6da4f47c52da187d5177dc371f0f512a7caaec5434e711c091
+RG_VERSION=14.1.0
 RG_URL="https://github.com/BurntSushi/ripgrep/releases/download/$RG_VERSION/ripgrep-$RG_VERSION-x86_64-unknown-linux-musl.tar.gz"
+RG_CHECKSUM_URL="https://github.com/BurntSushi/ripgrep/releases/download/$RG_VERSION/ripgrep-$RG_VERSION-x86_64-unknown-linux-musl.tar.gz.sha256"
 
 if [ ! -d "$HOME/bin/ripgrep" ]; then
     echo -n "Installing RG ... "
     TEMP_DIR=$(mktemp -d)
     curl -o "${TEMP_DIR}"/rg.tar.gz -sL "$RG_URL"
-    echo "$RG_SHA256 ""${TEMP_DIR}""/rg.tar.gz" | sha256sum -c --quiet
+    curl -o "${TEMP_DIR}"/rg.tar.gz.sha256sum -sL "$RG_CHECKSUM_URL"
+    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/rg.tar.gz.sha256sum) ""${TEMP_DIR}""/rg.tar.gz" | sha256sum -c --quiet
     mkdir -p "$HOME/bin/ripgrep"
     tar -C "$HOME/bin/ripgrep" --strip-components=1 -xf "${TEMP_DIR}"/rg.tar.gz
     rm -rf "${TEMP_DIR}"

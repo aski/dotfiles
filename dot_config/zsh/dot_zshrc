@@ -25,6 +25,8 @@ command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 [ -f  "$XDG_CONFIG_HOME/.dir_colors" ] && eval $(dircolors "$XDG_CONFIG_HOME/.dir_colors")
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
+# Keep these commands at the end of the file
+
 # FZF
 [ -f "$XDG_CONFIG_HOME/fzf/fzf.zsh" ] && source "$XDG_CONFIG_HOME/fzf/fzf.zsh"
 
