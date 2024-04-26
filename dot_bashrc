@@ -11,14 +11,19 @@ case $- in
       *) return;;
 esac
 
+HISTFILE="$HOME/.bash_history"
 HISTFILESIZE=20000
 HISTSIZE=10000
 
 # List of commands that shouldn't be added to the history
-HISTIGNORE="ls:ps:history:exit"
+HISTIGNORE="ls:ll:ps:history:exit:clear:pwd"
 
 # Avoid duplicates in history
 HISTCONTROL=ignoredups:erasedups:ignorespace
+
+# Re-read history file before showing next prompt
+PROMPT_COMMAND="history -a; history -r"
+
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
