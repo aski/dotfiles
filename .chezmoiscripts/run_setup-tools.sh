@@ -155,7 +155,7 @@ fi
 # NEOVIM
 #################
 
-NVIM_VERSION=v0.9.5
+NVIM_VERSION=v0.10.0
 NVIM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz"
 NVIM_CHECKSUM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz.sha256sum"
 
