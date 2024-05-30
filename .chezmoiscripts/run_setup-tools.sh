@@ -146,8 +146,8 @@ ln -sf "$HOME/bin/ripgrep/rg" "$HOME/bin/rg"
 
 if [ ! -d "$HOME/bin/sdkman" ]; then
     echo -n "Installing SDKMAN ... "
-    export SDKMAN_DIR="$HOME/bin/sdkman" && \
-    curl -s "https://get.sdkman.io?rcupdate=false" | bash > /dev/null 2>&1
+    export SDKMAN_DIR="$HOME/bin/sdkman" \
+        && curl -s "https://get.sdkman.io?rcupdate=false" | bash > /dev/null 2>&1
     echo "DONE"
 fi
 
@@ -210,6 +210,26 @@ if [ ! -f "$HOME/bin/lazygit" ]; then
     mkdir -p "$HOME/bin/lazygit"
     tar -C "$HOME/bin" -xf "${TEMP_DIR}"/"$LAZYGIT_FILE" lazygit
     rm "${TEMP_DIR}"/"$LAZYGIT_FILE" "${TEMP_DIR}"/"$LAZYGIT_CHECKSUM_FILE"
+    echo "DONE"
+fi
+
+#################
+# SHFMT
+#################
+SHFMT_VERSION=3.8.0
+SHFMT_URL="https://github.com/mvdan/sh/releases/download/v${SHFMT_VERSION}/shfmt_v${SHFMT_VERSION}_linux_amd64"
+SHFMT_CHECKSUM_URL="https://github.com/mvdan/sh/releases/download/v${SHFMT_VERSION}/sha256sums.txt"
+SHFMT_FILE=$(basename $SHFMT_URL)
+SHFMT_CHECKSUM_FILE=$(basename $SHFMT_CHECKSUM_URL)
+
+if [ ! -f "$HOME/bin/shfmt" ]; then
+    echo -n "Installing SHFMT... "
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/"$SHFMT_FILE" -sL "$SHFMT_URL"
+    curl -o "${TEMP_DIR}"/"$SHFMT_CHECKSUM_FILE" -sL "$SHFMT_CHECKSUM_URL"
+    cd "${TEMP_DIR}" && (grep "$SHFMT_FILE" "$SHFMT_CHECKSUM_FILE" | sha256sum -c --quiet)
+    mv "${TEMP_DIR}"/"$SHFMT_FILE" "$HOME/bin/shfmt"
+    rm "${TEMP_DIR}"/"$SHFMT_FILE" "${TEMP_DIR}"/"$SHFMT_CHECKSUM_FILE"
     echo "DONE"
 fi
 
