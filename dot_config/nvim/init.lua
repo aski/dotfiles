@@ -371,6 +371,7 @@ require('lazy').setup({
         sh = { 'shellcheck', 'shfmt' },
         xml = { 'xmlformat' },
         yaml = { 'prettier' },
+        markdown = { 'prettier' },
         ['_'] = { 'trim_whitespace', 'trim_newlines' },
       },
     },
