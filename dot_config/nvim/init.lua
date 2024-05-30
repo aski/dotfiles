@@ -365,9 +365,12 @@ require('lazy').setup({
         }
       end,
       formatters_by_ft = {
+        json = { 'prettier' },
         lua = { 'stylua' },
-        sh = { 'shellcheck' },
+        python = { 'autopep8' },
+        sh = { 'shellcheck', 'shfmt' },
         xml = { 'xmlformat' },
+        yaml = { 'prettier' },
         ['_'] = { 'trim_whitespace', 'trim_newlines' },
       },
     },
