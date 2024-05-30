@@ -233,4 +233,12 @@ if [ ! -f "$HOME/bin/shfmt" ]; then
     echo "DONE"
 fi
 
+#################
+# NVM
+#################
+NVM_VERSION=0.39.7
+if [ ! -d "$HOME/.config/nvm" ]; then
+    PROFILE=/dev/null bash -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash"
+fi
+
 echo "DONE"
