@@ -9,6 +9,11 @@ if [ "$OSTYPE" != "linux-gnu" ]; then
     exit 0
 fi
 
+if [ -z ${XDG_CONFIG_HOME+x} ]; then
+    echo "XDG_CONFIG_HOME not set ... aborting ..."
+    exit 0
+fi
+
 #################
 # FZF
 #################
@@ -237,7 +242,7 @@ fi
 # NVM
 #################
 NVM_VERSION=0.39.7
-if [ ! -d "$HOME/.config/nvm" ]; then
+if [ ! -d "$XDG_CONFIG_HOME/nvm" ]; then
     PROFILE=/dev/null bash -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash"
 fi
 
