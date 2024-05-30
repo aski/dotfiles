@@ -243,7 +243,14 @@ fi
 #################
 NVM_VERSION=0.39.7
 if [ ! -d "$XDG_CONFIG_HOME/nvm" ]; then
+    echo -n "Installing NVM... "
     PROFILE=/dev/null bash -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash"
 fi
+
+export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm install --lts
+npm install -g prettier
 
 echo "DONE"
