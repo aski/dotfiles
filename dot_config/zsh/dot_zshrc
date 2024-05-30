@@ -19,6 +19,7 @@ command -v chezmoi >/dev/null 2>&1 && source <(chezmoi completion zsh)
 command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 
+
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
 [ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
 
