@@ -160,19 +160,21 @@ fi
 # NEOVIM
 #################
 
-NVIM_VERSION=v0.10.0
-NVIM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz"
-NVIM_CHECKSUM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux64.tar.gz.sha256sum"
+NVIM_VERSION=v0.11.0
+NVIM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux-x86_64.tar.gz"
+NVIM_CHECKSUM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/shasum.txt"
 
 if [ ! -d "$HOME/bin/neovim" ]; then
     echo -n "Installing NEOVIM... "
     TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/nvim.tar.gz -sL "$NVIM_URL"
-    curl -o "${TEMP_DIR}"/nvim.sha256sum -sL "$NVIM_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/nvim.sha256sum) ""${TEMP_DIR}""/nvim.tar.gz" | sha256sum -c --quiet
+    INPUT_FILE=${NVIM_URL##*/}
+    CHECKSUM_FILE=${NVIM_CHECKSUM_URL##*/}
+    curl -O --output-dir "${TEMP_DIR}" -sL "$NVIM_URL"
+    curl -O --output-dir "${TEMP_DIR}" -sL "$NVIM_CHECKSUM_URL"
+    (cd -- "${TEMP_DIR}" && sha256sum --ignore-missing -c "${TEMP_DIR}/${CHECKSUM_FILE}")
     mkdir -p "$HOME/bin/neovim"
-    tar -C "$HOME/bin/neovim" --strip-components=1 -xf "${TEMP_DIR}"/nvim.tar.gz
-    rm "${TEMP_DIR}"/nvim.tar.gz "${TEMP_DIR}"/nvim.sha256sum
+    tar -C "$HOME/bin/neovim" --strip-components=1 -xf "${TEMP_DIR}"/${INPUT_FILE}
+    rm -rf "${TEMP_DIR}"
     echo "DONE"
 fi
 
@@ -252,5 +254,25 @@ export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
 
 nvm install --lts
 npm install -g prettier
+
+
+#################
+# CHEZMOI
+#################
+CHEZMOI_VERSION=2.62.1
+CHEZMOI_URL="https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux_amd64.tar.gz"
+
+if [ ! -f "$HOME/bin/chezmoi" ]; then
+    echo -n "Installing CHEZMOI... "
+    CHEZMOI_FILE=${CHEZMOI_URL##*/}
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/"$CHEZMOI_FILE" -sL "$CHEZMOI_URL"
+    mkdir -p "$HOME/bin/chezmoi"
+    tar -C "$HOME/bin/chezmoi" --strip-components=1 -xf "${TEMP_DIR}"/${CHEZMOI_FILE}
+    rm "${TEMP_DIR}"
+fi
+
+
+
 
 echo "DONE"
