@@ -1,13 +1,17 @@
 export ANSIBLE_NOCOWS=1
 export EDITOR='nvim'
-export HISTFILE="$XDG_STATE_HOME"/zsh/history
-export INPUTRC="$XDG_CONFIG_HOME/inputrc"
+export HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/inputrc"
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 export MANPAGER="nvim +Man!"
 export MAVEN_OPTS='-Xmx4096m -Xms1024m'
 export PAGER='less'
-export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 export VISUAL='nvim'
 export LESS='-R'
 

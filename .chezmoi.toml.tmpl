@@ -1,9 +1,0 @@
-{{- $name  := promptStringOnce . "name" "Full name" -}}
-{{- $email := promptStringOnce . "email" "Email address" -}}
-
-[data]
-    email = {{ $email | quote }}
-    name = {{ $name | quote }}
-
-[diff]
-    exclude = ["scripts"]

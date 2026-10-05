@@ -1,7 +1,15 @@
 ZSH_PLUGINS="$HOME/.local/share/zsh/plugins"
 
-. "$ZSH_PLUGINS"/yous/vanilli.sh/vanilli.zsh
-. "$ZSH_PLUGINS/zsh-users/zsh-completions/zsh-completions.plugin.zsh"
+if [ -d "$ZSH_PLUGINS/zsh-users/zsh-completions" ]; then
+  fpath=("$ZSH_PLUGINS/zsh-users/zsh-completions/src" $fpath)
+fi
+
+autoload -Uz compinit && compinit
+
+command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
+command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
+
+. "$ZSH_PLUGINS/yous/vanilli.sh/vanilli.zsh"
 . "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
 . "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
 . "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
@@ -12,31 +20,22 @@ setopt nohist_findnodups
 setopt share_history
 
 set -o emacs
-
 bindkey -M emacs '^H' backward-kill-word
-
-command -v chezmoi >/dev/null 2>&1 && source <(chezmoi completion zsh)
-command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
-command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
-
 
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
 [ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
 
-[ -f  "$XDG_CONFIG_HOME/.dir_colors" ] && eval $(dircolors "$XDG_CONFIG_HOME/.dir_colors")
+[ -f  "${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors" ] && eval $(dircolors "${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors")
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # Keep these commands at the end of the file
 
 # FZF
-[ -f "$XDG_CONFIG_HOME/fzf/fzf.zsh" ] && source "$XDG_CONFIG_HOME/fzf/fzf.zsh"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.zsh" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.zsh"
 
-# NODE VERSION MANAGER
-export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # SDKMAN
-[ -d "$HOME/bin/sdkman" ] && export SDKMAN_DIR="$HOME/bin/sdkman"
+[ -d "$HOME/.local/bin/sdkman" ] && export SDKMAN_DIR="$HOME/.local/bin/sdkman"
 [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 # vim: set filetype=zsh :

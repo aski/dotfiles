@@ -127,7 +127,7 @@ complete -F _ssh ssh
 
 export ANSIBLE_NOCOWS=1
 export EDITOR='nvim'
-export INPUTRC="$XDG_CONFIG_HOME/inputrc"
+export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/inputrc"
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 export MANPAGER="nvim +Man!"
@@ -139,10 +139,10 @@ export LESS='-R'
 # Keep these commands at the end of the file
 
 # FZF
-[ -s "${XDG_CONFIG_HOME}/fzf/fzf.bash" ] && source "${XDG_CONFIG_HOME}/fzf/fzf.bash"
+[ -s "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.bash" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.bash"
 
 # NODE VERSION MANAGER
-export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+export NVM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # SDKMAN
