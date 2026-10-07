@@ -1,15 +1,16 @@
-[user]
-    name          = {{ .name | quote }}
-    email         = {{ .email | quote }}
-
 [include]
-    path          = ~/.config/git/config.local
+    path          = config.local
 
 [core]
-    autocrlf      = input
-    commitGraph   = true
-    page          = less -FRSX
-    quotepath     = false
+    autocrlf       = input
+    commitGraph    = true
+    pager          = less -FRSX
+    quotepath      = false
+    untrackedCache = true
+    fsmonitor      = true
+
+[init]
+    defaultBranch = main
 
 [receive]
     advertisePushOptions = true
@@ -45,6 +46,7 @@
 
 [diff]
     tool          = vimdiff
+    algorithm     = histogram
 
 [log]
     abbrevCommit  = true
@@ -58,17 +60,8 @@
     ci            = commit
     df            = diff --color
     d             = difftool
-    stash-all     = stash save --include-untracked
     glog          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
     prune         = fetch --prune
     squash-all    = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-A new start}\");};f"
 
-{{ if eq .chezmoi.os "windows" }}
-[http]
-    sslbackend = schannel
-
-[credential "helperselector"]
-    selected = wincred
-{{ end }}
-
-# vim: set filetype=gitconfig foldmethod=indent :
+# vim: set filetype=gitconfig foldmethod=marker :
