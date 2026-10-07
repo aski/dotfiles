@@ -1,25 +1,26 @@
-export ANSIBLE_NOCOWS=1
-export EDITOR='nvim'
+typeset -U path PATH
+path=("$HOME/.local/bin" $path)
+
 export HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
-export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/inputrc"
-export LANG="en_US"
+[[ -d "${HISTFILE:h}" ]] || mkdir -p "${HISTFILE:h}" >/dev/null 2>&1
+
+export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
-export MANPAGER="nvim +Man!"
-export MAVEN_OPTS='-Xmx4096m -Xms1024m'
-export PAGER='less'
+export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/inputrc"
 
-if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    export PATH="$HOME/.local/bin:$PATH"
-fi
-
+export EDITOR='nvim'
 export VISUAL='nvim'
+export PAGER='less'
 export LESS='-R'
+export MANPAGER="nvim +Man!"
 
-if command -v fd &> /dev/null; then
-    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
-    export FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix'
-    export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix'
+export ANSIBLE_NOCOWS=1
+export MAVEN_OPTS='-Xmx4096m -Xms1024m'
+
+if (( $+commands[fd] )); then
+    export FZF_DEFAULT_COMMAND='fd --type f'
+    export FZF_CTRL_T_COMMAND='fd --type f'
+    export FZF_ALT_C_COMMAND='fd --type d'
 fi
-
 
 # vim: set filetype=zsh :

@@ -10,8 +10,8 @@ alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 
 alias grep='grep --color=auto --exclude-dir={.git}'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias fgrep='grep -F --color=auto'
+alias egrep='grep -E --color=auto'
 
 alias g='git'
 alias gti='git'
@@ -40,11 +40,9 @@ alias vu='vagrant up'
 alias vd='vagrant destroy -f'
 alias vh='vagrant halt'
 
-if [ "$(uname -o)" = "Msys" ]; then
+if [[ "$OSTYPE" == msys* || "$OSTYPE" == cygwin* ]]; then
   alias open='start'
-fi
-
-if [ "$(uname -s)" = "Linux" ]; then
+elif [[ "$OSTYPE" == linux* ]]; then
   alias open='xdg-open'
   alias pbcopy='xclip -selection clipboard'
   alias pbpaste='xclip -selection clipboard -o'

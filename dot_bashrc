@@ -11,7 +11,8 @@ case $- in
       *) return;;
 esac
 
-HISTFILE="$HOME/.bash_history"
+export HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/bash/history"
+[[ -d "${HISTFILE%/*}" ]] || mkdir -p "${HISTFILE%/*}" 2>/dev/null
 HISTFILESIZE=20000
 HISTSIZE=10000
 
@@ -23,7 +24,6 @@ HISTCONTROL=ignoredups:erasedups:ignorespace
 
 # Re-read history file before showing next prompt
 PROMPT_COMMAND="history -a; history -r"
-
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
@@ -44,55 +44,56 @@ shopt -s autocd
 # When using history substitution, only show the resulting command instead of executing it immediately
 shopt -s histverify
 
-if [ "$UID" != 0 ]; then
+if [[ "$UID" != 0 ]]; then
     # Case insensitive globbing (used in pathname expansion)
     shopt -s nocaseglob
 fi
 
 # Make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+if [[ -z "${debian_chroot:-}" && -r /etc/debian_chroot ]]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # Set colors for the ls command
-if [ -x /usr/bin/dircolors ]; then
-    if [ -f ~/.config/.dir_colors ]; then
-        eval "$(dircolors -b ~/.config/.dir_colors)"
+if [[ -x /usr/bin/dircolors ]]; then
+    LOCAL_DIRCOLORS="${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors"
+    if [[ -f "$LOCAL_DIRCOLORS" ]]; then
+        eval "$(dircolors -b "$LOCAL_DIRCOLORS")"
     else
         eval "$(dircolors -b)"
     fi
 fi
 
 # Import shell aliases
-if [ -f ~/.aliases ]; then
-    source ~/.aliases
-fi
+[[ -f "$HOME/.aliases" ]] && source "$HOME/.aliases"
 
 # Load bash completions
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
+  if [[ -f /usr/share/bash-completion/bash_completion ]]; then
     . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
+  elif [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
   fi
 fi
 
-git_branch_dirty() {
-    [[ -z $(git status --porcelain 2> /dev/null) ]] || echo "*"
-}
-
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
-}
-
 # Set up prompt
-if [[ "$(uname -o)" != "Msys" ]]; then
-    export PS1='\[\e[34m\]\w\[\e[0m\]\e[38;5;241m\]$(parse_git_branch)\[\e[0m\]\[\e[35m\]$(git_branch_dirty)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
+if [[ "$OSTYPE" == msys* || "$OSTYPE" == cygwin* ]]; then
+    if type __git_ps1 &>/dev/null; then
+        export PS1='\[\e[34m\]\w\[\e[0m\]\[\e[38;5;241m\]$(__git_ps1)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
+    else
+        export PS1='\[\e[34m\]\w\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
+   fi
 else
-    export PS1='\[\e[34m\]\w\[\e[0m\] `__git_ps1` ❯ '
+    if type __git_ps1 &>/dev/null; then
+        export PS1='\[\e[34m\]\w\[\e[0m\]\[\e[38;5;241m\]$(__git_ps1)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
+    else
+        parse_git_branch() { git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'; }
+        git_branch_dirty() { [[ -z $(git status --porcelain 2>/dev/null) ]] || echo "*"; }
+        export PS1='\[\e[34m\]\w\[\e[0m\]\[\e[38;5;241m\]$(parse_git_branch)\[\e[0m\]\[\e[35m\]$(git_branch_dirty)\[\e[0m\]\n\[\e[35m\]❯\[\e[0m\] '
+    fi
 fi
 
 # Make man pages easier to read
@@ -104,22 +105,24 @@ export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
-export VISUAL=vim
-export EDITOR=vim
+if [[ -d "$HOME/.local/bin" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
 
-if [ -d "$HOME/bin" ]; then
+if [[ -d "$HOME/bin" ]]; then
     export PATH="$HOME/bin:$PATH"
 fi
 
 _ssh()
 {
-    local cur prev opts
+    local cur prev opts files
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts=$(grep '^Host' ~/.ssh/config ~/.ssh/config.d/* 2>/dev/null | grep -v '[?*]' | cut -d ' ' -f 2-)
+    files=("$HOME/.ssh/config")
+    [[ -d "$HOME/.ssh/config.d" ]] && files+=("$HOME/.ssh/config.d"/*)
 
-    COMPREPLY=( $(compgen -W "$opts" -- ${cur}) )
+    opts=$(grep -h '^Host' "${files[@]}" 2>/dev/null | grep -v '[?*]' | cut -d ' ' -f 2-)
+    COMPREPLY=( $(compgen -W "$opts" -- "${cur}") )
     return 0
 }
 
@@ -128,25 +131,23 @@ complete -F _ssh ssh
 export ANSIBLE_NOCOWS=1
 export EDITOR='nvim'
 export INPUTRC="${XDG_CONFIG_HOME:-$HOME/.config}/inputrc"
-export LANG="en_US"
+export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
+export LESS='-R'
 export MANPAGER="nvim +Man!"
 export MAVEN_OPTS='-Xmx4096m -Xms1024m'
 export PAGER='less'
 export VISUAL='nvim'
-export LESS='-R'
 
 # Keep these commands at the end of the file
 
 # FZF
-[ -s "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.bash" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.bash"
-
-# NODE VERSION MANAGER
-export NVM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[[ -s "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.bash" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.bash"
 
 # SDKMAN
-[ -d "$HOME/bin/sdkman" ] && export SDKMAN_DIR="$HOME/bin/sdkman"
-[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+if [[ -d "$HOME/.local/bin/sdkman" ]]; then
+    export SDKMAN_DIR="$HOME/.local/bin/sdkman"
+    [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
 
 # vim: set filetype=bash :

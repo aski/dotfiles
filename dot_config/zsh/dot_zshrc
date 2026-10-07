@@ -1,19 +1,27 @@
-ZSH_PLUGINS="$HOME/.local/share/zsh/plugins"
+typeset -U fpath
+
+ZSH_PLUGINS="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 
 if [ -d "$ZSH_PLUGINS/zsh-users/zsh-completions" ]; then
   fpath=("$ZSH_PLUGINS/zsh-users/zsh-completions/src" $fpath)
 fi
 
-autoload -Uz compinit && compinit
+ZSH_COMPDIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
+[[ -d "$ZSH_COMPDIR" ]] || mkdir -p "$ZSH_COMPDIR"
 
-command -v helm    >/dev/null 2>&1 && source <(helm completion zsh)
-command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
+(( $+commands[kubectl] )) && [[ ! -f "$ZSH_COMPDIR/_kubectl" ]] && kubectl completion zsh > "$ZSH_COMPDIR/_kubectl"
+(( $+commands[helm] ))    && [[ ! -f "$ZSH_COMPDIR/_helm" ]]    && helm completion zsh > "$ZSH_COMPDIR/_helm"
 
-. "$ZSH_PLUGINS/yous/vanilli.sh/vanilli.zsh"
-. "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-. "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
-. "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
-. "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
+fpath=("$ZSH_COMPDIR" $fpath)
+
+source "$ZSH_PLUGINS/yous/vanilli.sh/vanilli.zsh"
+source "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
+source "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
+source "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
+source "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
+
+autoload -Uz compinit
+compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump"
 
 setopt inc_append_history
 setopt nohist_findnodups
@@ -25,7 +33,15 @@ bindkey -M emacs '^H' backward-kill-word
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
 [ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
 
-[ -f  "${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors" ] && eval $(dircolors "${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors")
+LOCAL_DIRCOLORS="${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors"
+if [ -f "$LOCAL_DIRCOLORS" ]; then
+    CACHE_DIRCOLORS="${XDG_CACHE_HOME:-$HOME/.cache}/dircolors.zsh"
+    if [[ ! -f "$CACHE_DIRCOLORS" || "$LOCAL_DIRCOLORS" -nt "$CACHE_DIRCOLORS" ]]; then
+        [[ -d "${CACHE_DIRCOLORS:h}" ]] || mkdir -p "${CACHE_DIRCOLORS:h}"
+        dircolors -b "$LOCAL_DIRCOLORS" > "$CACHE_DIRCOLORS" 2>/dev/null
+    fi
+    source "$CACHE_DIRCOLORS"
+fi
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # Keep these commands at the end of the file
@@ -35,7 +51,9 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 
 # SDKMAN
-[ -d "$HOME/.local/bin/sdkman" ] && export SDKMAN_DIR="$HOME/.local/bin/sdkman"
-[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+if [ -d "$HOME/.local/bin/sdkman" ]; then
+    export SDKMAN_DIR="$HOME/.local/bin/sdkman"
+    [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
 
 # vim: set filetype=zsh :
