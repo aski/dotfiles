@@ -1,8 +1,8 @@
 $include /etc/inputrc
 
 # search history with up and down arrows
-"\e[A": history-search-backward
-"\e[B": history-search-forward
+Up: history-search-backward
+Down: history-search-forward
 
 set bell-style none
 
@@ -19,6 +19,8 @@ set completion-ignore-case on
 set completion-map-case on
 
 set completion-prefix-display-length 3
+
+set completion-display-width 0
 
 set completion-query-items 500
 
@@ -51,11 +53,5 @@ set show-all-if-unmodified on
 set skip-completed-text on
 
 set visible-stats on
-
-$if Bash
-    Tab: menu-complete
-    Space: magic-space
-$endif
-
 
 # vim: set filetype=readline foldmethod=marker :

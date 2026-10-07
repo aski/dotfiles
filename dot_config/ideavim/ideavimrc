@@ -1,2 +1,32 @@
 set clipboard=unnamed,unnamedplus
 set ideajoin
+set idearefactormode=keep
+
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set visualbell
+
+nnoremap <Esc> :noh<CR>
+
+let mapleader=" "
+
+" code navigation
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gr :action FindUsages<CR>
+
+" window split navigation
+nnoremap <C-W><C-W> :action NextSplitter<CR>
+nnoremap <C-W>w :action NextSplitter<CR>
+
+" refactoring
+nnoremap <leader>rn :action RenameElement<CR>
+nnoremap <leader>ca :action ShowIntentionActions<CR>
+nnoremap <leader>oi :action OptimizeImports<CR>
+
+" window management
+nnoremap <leader>w :action CloseContent<CR>
+
+" vim: set filetype=vim :
