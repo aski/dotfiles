@@ -69,16 +69,34 @@ if vim.fn.exists '+shellslash' > 0 then
   vim.opt.shellslash = true
 end
 
+-- Set highlight on search
+vim.opt.hlsearch = true
+
+vim.diagnostic.config {
+  update_in_insert = false,
+  severity_sort = true,
+  float = { border = 'rounded', source = 'if_many' },
+  underline = { severity = { min = vim.diagnostic.severity.WARN } },
+  virtual_text = true,
+  virtual_lines = false,
+}
+
 -- [[ Basic Keymaps ]]
 
--- Set highlight on search, but clear on pressing <Esc> in normal mode
-vim.opt.hlsearch = true
+-- Clear highlighted search on <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
+vim.keymap.set('n', '[d', function()
+  vim.diagnostic.jump { count = -1 }
+end, { desc = 'Go to previous [D]iagnostic message' })
+
+vim.keymap.set('n', ']d', function()
+  vim.diagnostic.jump { count = 1 }
+end, { desc = 'Go to next [D]iagnostic message' })
+
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -110,13 +128,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
 end ---@diagnostic disable-next-line: undefined-field
@@ -126,8 +144,6 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   { 'ledger/vim-ledger' },
   { 'tpope/vim-sleuth' }, -- Detect tabstop and shiftwidth automatically
-
-  --{ 'numToStr/Comment.nvim', opts = {} },
 
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -146,17 +162,19 @@ require('lazy').setup({
     'folke/which-key.nvim',
     event = 'VimEnter',
     config = function()
-      require('which-key').setup()
-
-      require('which-key').add {
-        { '<leader>c', group = '[C]ode' },
-        { '<leader>d', group = '[D]ocument' },
-        { '<leader>r', group = '[R]ename' },
-        { '<leader>s', group = '[S]earch' },
-        { '<leader>w', group = '[W]orkspace' },
+      require('which-key').setup {
+        delay = 0,
+        icons = { mappings = vim.g.have_nerd_font },
+        spec = {
+          { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
+          { '<leader>t', group = '[T]oggle' },
+          { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+          { 'gr', group = 'LSP Actions', mode = { 'n' } },
+        },
       }
     end,
   },
+
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -226,14 +244,12 @@ require('lazy').setup({
       { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
       { 'j-hui/fidget.nvim', opts = {} },
       {
-        'folke/neodev.nvim',
+        'folke/lazydev.nvim',
+        ft = 'lua',
         opts = {
-          override = function(root_dir, library)
-            if root_dir:find(vim.fn.expand '$HOME' .. '/.local/share/chezmoi/dot_config/nvim', 1, true) == 1 then
-              library.enabled = true
-              library.plugins = true
-            end
-          end,
+          library = {
+            { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+          },
         },
       },
     },
@@ -466,11 +482,15 @@ require('lazy').setup({
     priority = 1000,
     init = function()
       vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.hi 'Comment gui=none'
     end,
   },
 
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
+  },
 
   {
     'echasnovski/mini.nvim',
