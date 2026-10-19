@@ -15,7 +15,7 @@ if [ -z "${XDG_CONFIG_HOME+x}" ]; then
 fi
 
 for cmd in curl git unzip tar sha256sum cut basename; do
-    if ! command -v "$cmd" &> /dev/null; then
+    if ! command -v "$cmd" > /dev/null 2>&1; then
         echo "Error: Required system tool '$cmd' is not installed." >&2
         exit 1
     fi
@@ -236,6 +236,25 @@ if [ ! -f "$INSTALL_DIR/shfmt" ]; then
     curl -o "${TEMP_DIR}"/"$SHFMT_FILE" -sL "$SHFMT_URL"
     echo "$SHFMT_SHA256 ""${TEMP_DIR}""/$SHFMT_FILE" | sha256sum -c --quiet
     mv "${TEMP_DIR}"/"$SHFMT_FILE" "$INSTALL_DIR/shfmt"
+    chmod u+x "$INSTALL_DIR/shfmt"
+    echo "DONE"
+fi
+
+#################
+# FNM
+#################
+FNM_VERSION=1.39.0
+FNM_URL="https://github.com/Schniz/fnm/releases/download/v$FNM_VERSION/fnm-linux.zip"
+FNM_FILE=$(basename $FNM_URL)
+FNM_SHA256="7807664f39d39fc518da1c35ba0181e4b3267603c4b1dedeb4b5fc6ae440a224"
+
+if [ ! -f "$INSTALL_DIR/fnm" ]; then
+    echo -n "Installing FNM... "
+    TEMP_DIR=$(mktemp -d)
+    curl -o "${TEMP_DIR}"/"$FNM_FILE" -sL "$FNM_URL"
+    echo "$FNM_SHA256 ""${TEMP_DIR}""/$FNM_FILE" | sha256sum -c --quiet
+    unzip "${TEMP_DIR}"/"$FNM_FILE" -d "${INSTALL_DIR}"
+    rm "${TEMP_DIR}"/"$FNM_FILE"
     echo "DONE"
 fi
 

@@ -40,12 +40,12 @@ find "$SOURCE_DIR" -mindepth 1 \
 
     # Get the relative path from the source directory
     rel_path="${item#$SOURCE_DIR/}"
-    
+
     # Replace "dot_" at the beginning of the path or after any slash
     new_rel_path=$(echo "$rel_path" | sed -E 's/(^|\/)dot_/\/\./g' | sed 's/^\/\././' | sed 's/\/\//\//g')
-    
+
     dest_path="$TARGET_DIR/$new_rel_path"
-    
+
     if [ -d "$item" ]; then
         if [ ! -d "$dest_path" ]; then
             echo "Creating directory: $dest_path"
