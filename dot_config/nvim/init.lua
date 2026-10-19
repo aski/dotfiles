@@ -416,12 +416,16 @@ require('lazy').setup({
   {
     'echasnovski/mini.nvim',
     config = function()
-      require('mini.ai').setup { n_lines = 500 }
+      require('mini.ai').setup {
+        n_lines = 500,
+      }
 
       require('mini.surround').setup()
 
       local statusline = require 'mini.statusline'
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      statusline.setup {
+        use_icons = vim.g.have_nerd_font,
+      }
 
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
@@ -434,8 +438,8 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
-      auto_install = true,
+      ensure_installed = { 'bash', 'c', 'html', 'javascript', 'lua', 'markdown', 'markdown_inline', 'vim', 'vimdoc' },
+      auto_install = false,
       highlight = {
         enable = true,
         additional_vim_regex_highlighting = { 'ruby' },
@@ -443,7 +447,6 @@ require('lazy').setup({
       indent = { enable = true, disable = { 'ruby' } },
     },
     config = function(_, opts)
-      ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.config').setup(opts)
     end,
   },
@@ -465,6 +468,27 @@ require('lazy').setup({
         end,
       })
     end,
+  },
+
+  { -- Completion
+    'saghen/blink.cmp',
+    version = '1.*',
+    dependencies = 'rafamadriz/friendly-snippets',
+    opts = {
+      keymap = {
+        preset = 'default',
+        ['<C-Z>'] = { 'accept', 'fallback' },
+      },
+      appearance = {
+        nerd_font_variant = 'mono',
+      },
+      completion = { documentation = { auto_show = false } },
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+      },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
+    },
+    opts_extend = { 'sources.default' },
   },
 }, {
   dev = {
