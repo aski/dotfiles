@@ -162,204 +162,101 @@ require('lazy').setup({
   {
     'folke/which-key.nvim',
     event = 'VimEnter',
-    config = function()
-      require('which-key').setup {
-        delay = 0,
-        icons = { mappings = vim.g.have_nerd_font },
-        spec = {
-          { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
-          { '<leader>t', group = '[T]oggle' },
-          { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-          { 'gr', group = 'LSP Actions', mode = { 'n' } },
-        },
-      }
-    end,
+    keys = {
+      {
+        '<leader>?',
+        function()
+          require('which-key').show({ global = false })
+        end,
+        desc = 'Buffer Local Keymaps (which-key)',
+      },
+    },
+    opts = {},
   },
 
-  {
-    'nvim-telescope/telescope.nvim',
-    version = 'v0.2.2',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make', cond = vim.fn.executable 'make' == 1 },
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
-    },
-    cmd = 'Telescope',
+  { -- Fuzzy Finder
+    'ibhagwan/fzf-lua',
+    dependencies = { 'nvim-mini/mini.icons' },
+    opts = {},
     keys = {
       {
         '<leader>ff',
         function()
-          require('telescope.builtin').find_files()
+          require('fzf-lua').files()
         end,
-        desc = '[F]ind [F]iles (Telescope)',
+        desc = '[F]ind [F]iles in project directory',
       },
       {
         '<leader>fg',
         function()
-          require('telescope.builtin').live_grep()
+          require('fzf-lua').live_grep()
         end,
-        desc = '[F]ind [G]rep (Telescope)',
+        desc = '[F]ind by [G]repping in project directory',
       },
       {
-        '<leader><leader>',
+        '<leader>fk',
         function()
-          require('telescope.builtin').buffers()
+          require('fzf-lua').keymaps()
         end,
-        desc = 'Find Buffers (Telescope)',
+        desc = '[F]ind [K]eymaps',
+      },
+      {
+        '<leader>fc',
+        function()
+          require('fzf-lua').files({cwd=vim.fn.stdpath("config")})
+        end,
+        desc = '[F]ind in Neovim [C]onfig',
+      },
+      {
+        '<leader>fd',
+        function()
+          require('fzf-lua').diagnostics_document()
+        end,
+        desc = '[F]ind [D]iagnostic',
       },
       {
         '<leader>fh',
         function()
-          require('telescope.builtin').help_tags()
+          require('fzf-lua').helptags()
         end,
-        desc = '[F]ind [H]elp (Telescope)',
+        desc = '[F]ind [H]elp',
       },
       {
-        '<leader>f/',
+        '<leader>fo',
         function()
-          require('telescope.builtin').live_grep {
-            grep_open_files = true,
-            prompt_title = 'Live Grep in Open Files',
-          }
+          require('fzf-lua').oldfiles()
         end,
-        desc = '[F]ind [/] in Open files',
+        desc = '[F]ind [O]ld Files',
       },
-    },
-    config = function()
-      local telescope = require 'telescope'
-
-      telescope.setup {
-        defaults = {
-          mappings = {
-            i = {
-              ['<C-h>'] = 'which_key',
-            },
-          },
-        },
-      }
-
-      pcall(telescope.load_extension, 'fzf')
-    end,
-  },
-
-  {
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      { 'williamboman/mason.nvim' },
-      { 'williamboman/mason-lspconfig.nvim' },
-      { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
-      { 'j-hui/fidget.nvim', opts = {} },
       {
-        'folke/lazydev.nvim',
-        ft = 'lua',
-        opts = {
-          library = {
-            { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
-          },
-        },
+        '<leader>fr',
+        function()
+          require('fzf-lua').resume()
+        end,
+        desc = '[F]ind [R]esume',
+      },
+      {
+        '<leader>fw',
+        function()
+          require('fzf-lua').grep_cword()
+        end,
+        desc = '[F]ind current [W]ord',
+      },
+      {
+        '<leader>/',
+        function()
+          require('fzf-lua').lgrep_curbuf()
+        end,
+        desc = '[/] Live grep in current buffer',
+      },
+      {
+        '<leader><leader>',
+        function()
+          require('fzf-lua').buffers()
+        end,
+        desc = 'Find existing buffers',
       },
     },
-    config = function()
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-        callback = function(event)
-          local map = function(keys, func, desc)
-            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-          end
-
-          -- Jump to the definition of the word under your cursor.
-          --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-
-          -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-          -- Jump to the implementation of the word under your cursor.
-          --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-          -- Jump to the type of the word under your cursor.
-          --  Useful when you're not sure what type a variable is and you want to see
-          --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-
-          -- Fuzzy find all the symbols in your current document.
-          --  Symbols are things like variables, functions, types, etc.
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-
-          -- Fuzzy find all the symbols in your current workspace.
-          --  Similar to document symbols, except searches over your entire project.
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-          -- Rename the variable under your cursor.
-          --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-          -- Execute a code action, usually your cursor needs to be on top of an error
-          -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-
-          -- Opens a popup that displays documentation about the word under your cursor
-          --  See `:help K` for why this keymap.
-          map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header.
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
-          -- The following two autocommands are used to highlight references of the
-          -- word under your cursor when your cursor rests there for a little while.
-          --    See `:help CursorHold` for information about when this is executed
-          --
-          -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.server_capabilities.documentHighlightProvider then
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-              buffer = event.buf,
-              callback = vim.lsp.buf.document_highlight,
-            })
-
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-              buffer = event.buf,
-              callback = vim.lsp.buf.clear_references,
-            })
-          end
-        end,
-      })
-
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-      local servers = {
-        lua_ls = {
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-            },
-          },
-        },
-      }
-
-      require('mason').setup()
-
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua',
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
-    end,
   },
 
   { -- Autoformat
@@ -398,7 +295,7 @@ require('lazy').setup({
     },
   },
 
-  {
+  { -- Colorscheme
     'folke/tokyonight.nvim',
     priority = 1000,
     init = function()
@@ -406,7 +303,7 @@ require('lazy').setup({
     end,
   },
 
-  {
+  { -- TODO highlights
     'folke/todo-comments.nvim',
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -416,11 +313,9 @@ require('lazy').setup({
   {
     'echasnovski/mini.nvim',
     config = function()
-      require('mini.ai').setup {
-        n_lines = 500,
-      }
-
+      require('mini.ai').setup { n_lines = 500, }
       require('mini.surround').setup()
+      require('mini.icons').setup()
 
       local statusline = require 'mini.statusline'
       statusline.setup {
@@ -438,8 +333,8 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'javascript', 'lua', 'markdown', 'markdown_inline', 'vim', 'vimdoc' },
-      auto_install = false,
+      ensure_installed = { 'bash', 'c', 'html', 'javascript', 'lua', 'markdown', 'markdown_inline', 'ruby', 'vim', 'vimdoc' },
+      auto_install = true,
       highlight = {
         enable = true,
         additional_vim_regex_highlighting = { 'ruby' },
@@ -451,7 +346,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- Linting
+  { -- Linter
     'mfussenegger/nvim-lint',
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
@@ -490,27 +385,6 @@ require('lazy').setup({
     },
     opts_extend = { 'sources.default' },
   },
-}, {
-  dev = {
-    path = '~/Coding/aski',
-  },
-  ui = {
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
-    },
-  },
-})
+}, {})
 
 -- vim: ts=2 sts=2 sw=2 et
