@@ -161,7 +161,7 @@ require('lazy').setup({
 
   {
     'folke/which-key.nvim',
-    event = 'VimEnter',
+    event = 'VeryLazy',
     keys = {
       {
         '<leader>?',
@@ -312,8 +312,9 @@ require('lazy').setup({
 
   {
     'echasnovski/mini.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
     config = function()
-      require('mini.ai').setup { n_lines = 500, }
+      require('mini.ai').setup( { n_lines = 500, })
       require('mini.surround').setup()
       require('mini.icons').setup()
 
@@ -346,7 +347,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- Linter
+  { -- LINTING
     'mfussenegger/nvim-lint',
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
@@ -365,7 +366,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- Completion
+  { -- COMPLETION
     'saghen/blink.cmp',
     version = '1.*',
     dependencies = 'rafamadriz/friendly-snippets',
