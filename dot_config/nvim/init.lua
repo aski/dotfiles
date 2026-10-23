@@ -174,7 +174,7 @@ require('lazy').setup({
     opts = {},
   },
 
-  { -- Fuzzy Finder
+  { -- FUZZY FINDER
     'ibhagwan/fzf-lua',
     dependencies = { 'nvim-mini/mini.icons' },
     opts = {},
@@ -259,7 +259,7 @@ require('lazy').setup({
     },
   },
 
-  { -- Autoformat
+  { -- AUTOFORMAT
     'stevearc/conform.nvim',
     lazy = false,
     keys = {
@@ -268,7 +268,7 @@ require('lazy').setup({
         function()
           require('conform').format { async = true, lsp_fallback = true }
         end,
-        mode = '',
+        mode = { 'n', 'v' },
         desc = '[F]ormat buffer',
       },
     },
@@ -276,12 +276,16 @@ require('lazy').setup({
       notify_on_error = false,
       log_level = vim.log.levels.DEBUG,
       format_on_save = function(bufnr)
-        local disable_filetypes = { c = true, cpp = true }
-        return {
-          timeout_ms = 500,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-        }
+        local enabled_filetypes = {}
+        if enabled_filetypes[vim.bo[bufnr].filetype] then
+          return { timeout_ms = 500 }
+        else
+          return nil
+        end
       end,
+      default_format_opts = {
+        lsp_format = 'fallback',
+      },
       formatters_by_ft = {
         json = { 'prettier' },
         lua = { 'stylua' },
@@ -295,7 +299,7 @@ require('lazy').setup({
     },
   },
 
-  { -- Colorscheme
+  { -- COLORSCHEME
     'folke/tokyonight.nvim',
     priority = 1000,
     init = function()
@@ -303,7 +307,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- TODO highlights
+  { -- TODO HIGHLIGHTS
     'folke/todo-comments.nvim',
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
