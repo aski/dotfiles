@@ -4,23 +4,20 @@
 set -e
 
 # Change this to the path of your source directory
-SOURCE_DIR="$1"
-TARGET_DIR="$2"
+SOURCE_DIR=$(dirname "$(readlink -f "$0")")
+SOURCE_DIR=$(realpath "$SOURCE_DIR/..")
+
+TARGET_DIR=$(realpath "$HOME")
 
 if [ -z "$SOURCE_DIR" ]; then
-    echo "Error: Please provide the source directory path."
-    echo "Usage: $0 /path/to/source_dir /path/to/target_dir"
+    echo "Error: source directory invalid."
     exit 1
 fi
 
 if [ -z "$TARGET_DIR" ]; then
-    echo "Error: Please provide the target directory path."
-    echo "Usage: $0 /path/to/source_dir /path/to/target_dir"
+    echo "Error: target directory invalid."
     exit 1
 fi
-
-SOURCE_DIR=$(cd "$SOURCE_DIR" && pwd)
-TARGET_DIR=$(cd "$TARGET_DIR" && pwd)
 
 echo "Processing files from: $SOURCE_DIR"
 echo "Target directory:      $TARGET_DIR"

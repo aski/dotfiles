@@ -306,6 +306,21 @@ require('lazy').setup({
   },
 
   {
+    'folke/snacks.nvim',
+    priority = 1000,
+    lazy = false,
+    --- @type snacks.Config
+    opts = {
+      input = {
+        enabled = true,
+      },
+      picker = {
+        enabled = true,
+      },
+    },
+  },
+
+  {
     'echasnovski/mini.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
     config = function()
@@ -570,6 +585,14 @@ require('lazy').setup({
           -- cmd = { ... },
           -- filetypes = { ... },
           -- capabilities = {},
+          settings = {
+            Lua = {
+              workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false,
+              },
+            },
+          },
           -- settings = {
           --   Lua = {
           --     completion = {
@@ -618,7 +641,6 @@ require('lazy').setup({
     end,
   },
 
-
   { -- COMPLETION
     'saghen/blink.cmp',
     version = '1.*',
@@ -641,19 +663,25 @@ require('lazy').setup({
   },
 
   {
-    'folke/snacks.nvim',
-    priority = 1000,
-    lazy = false,
-    --- @type snacks.Config
-    opts = {
-      input = {
-        enabled = true,
-      },
-      picker = {
-        enabled = true,
+    'DrKJeff16/project.nvim',
+    event = 'VeryLazy',
+    dependencies = { 'ibhagwan/fzf-lua' },
+    config = function()
+      require('project').setup {
+        fzf_lua = {
+          enabled = true
+        },
+      }
+    end,
+    keys = {
+      {
+        '<leader>fp',
+        '<cmd>Project fzf-lua<cr>',
+        desc = 'Find Project (fzf-lua)'
       },
     },
-  }
+  },
+
 }, {})
 
 -- vim: ts=2 sts=2 sw=2 et
