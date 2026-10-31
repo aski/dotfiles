@@ -259,3 +259,10 @@ if [ ! -f "$INSTALL_DIR/fnm" ]; then
 fi
 
 echo "DONE"
+
+PYTHON_CMD=$(command -v python3 || command -v python)
+
+if ! "$PYTHON_CMD" -m pip --version >/dev/null 2>&1; then
+    echo -n "Installing pip... "
+    python -m ensurepip --upgrade
+fi

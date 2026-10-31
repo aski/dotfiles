@@ -5,7 +5,7 @@ echo "ZSH plugin installation..."
 PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
 mkdir -p "$PLUGINS_DIR"
 
-if [ ! -d "$PLUGINS_DIR/yous/vanilli.sh" ]; then
+if [ ! -d $PLUGINS_DIR/yous/vanilli.sh ]; then
     git clone https://github.com/yous/vanilli.sh.git "$PLUGINS_DIR/yous/vanilli.sh"
 fi
 

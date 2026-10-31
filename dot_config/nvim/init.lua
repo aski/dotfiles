@@ -15,9 +15,6 @@ vim.g.have_nerd_font = true
 -- Make line numbers default
 vim.opt.number = true
 
--- Keep relative line numbers switched off for now
-vim.opt.relativenumber = false
-
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
@@ -25,7 +22,9 @@ vim.opt.mouse = 'a'
 vim.opt.showmode = false
 
 -- Sync clipboard between OS and Neovim.
-vim.opt.clipboard = 'unnamedplus'
+vim.schedule(function()
+  vim.opt.clipboard = 'unnamedplus'
+end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -69,13 +68,14 @@ if vim.fn.exists '+shellslash' > 0 then
   vim.opt.shellslash = true
 end
 
--- Set highlight on search
-vim.opt.hlsearch = true
+vim.opt.winborder = 'rounded'
+
+vim.opt.confirm = true
 
 vim.diagnostic.config {
   update_in_insert = false,
   severity_sort = true,
-  float = { border = 'rounded', source = 'if_many' },
+  float = { source = 'if_many' },
   underline = { severity = { min = vim.diagnostic.severity.WARN } },
   virtual_text = true,
   virtual_lines = false,
@@ -119,16 +119,25 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
+    -- TODO: on_yank is deprecated after 0.12, use vim.hl.hl_op()
     vim.hl.on_yank()
   end,
 })
+
+-- disable remote plugin providers to stop warnings in :checkhealth
+for _, p in ipairs { 'node', 'perl', 'python3', 'ruby' } do
+  vim.g['loaded_' .. p .. '_provider'] = 0
+end
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.uv.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-  vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
-end ---@diagnostic disable-next-line: undefined-field
+  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+  if vim.v.shell_error ~= 0 then
+    error('Error cloning lazy.nvim:\n' .. out)
+  end
+end
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
@@ -167,8 +176,13 @@ require('lazy').setup({
 
   { -- FUZZY FINDER
     'ibhagwan/fzf-lua',
-    dependencies = { 'nvim-mini/mini.icons' },
+    dependencies = { 'nvim-mini/mini.nvim' },
     opts = {},
+    event = 'VeryLazy',
+    config = function(_, opts)
+      require('fzf-lua').setup(opts)
+      require('fzf-lua').register_ui_select()
+    end,
     keys = {
       {
         '<leader>ff',
@@ -252,12 +266,11 @@ require('lazy').setup({
 
   { -- AUTOFORMAT
     'stevearc/conform.nvim',
-    lazy = false,
     keys = {
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_fallback = true }
+          require('conform').format { async = true }
         end,
         mode = { 'n', 'v' },
         desc = '[F]ormat buffer',
@@ -265,15 +278,6 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      log_level = vim.log.levels.DEBUG,
-      format_on_save = function(bufnr)
-        local enabled_filetypes = {}
-        if enabled_filetypes[vim.bo[bufnr].filetype] then
-          return { timeout_ms = 500 }
-        else
-          return nil
-        end
-      end,
       default_format_opts = {
         lsp_format = 'fallback',
       },
@@ -281,13 +285,16 @@ require('lazy').setup({
         json = { 'prettier' },
         lua = { 'stylua' },
         python = { 'autopep8' },
-        sh = { 'shellcheck', 'shfmt' },
-        xml = { 'xmlformat' },
+        sh = { 'shfmt' },
+        xml = { 'xmlformatter' },
         yaml = { 'prettier' },
         markdown = { 'prettier' },
         ['_'] = { 'trim_whitespace', 'trim_newlines' },
       },
     },
+    init = function()
+      vim.opt.formatexpr = "v:lua.require'conform'.formatexpr()"
+    end,
   },
 
   { -- COLORSCHEME
@@ -306,23 +313,7 @@ require('lazy').setup({
   },
 
   {
-    'folke/snacks.nvim',
-    priority = 1000,
-    lazy = false,
-    --- @type snacks.Config
-    opts = {
-      input = {
-        enabled = true,
-      },
-      picker = {
-        enabled = true,
-      },
-    },
-  },
-
-  {
-    'echasnovski/mini.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
+    'nvim-mini/mini.nvim',
     config = function()
       require('mini.ai').setup { n_lines = 500 }
       require('mini.surround').setup()
@@ -343,40 +334,75 @@ require('lazy').setup({
 
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'javascript', 'lua', 'markdown', 'markdown_inline', 'ruby', 'vim', 'vimdoc' },
-      auto_install = true,
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
-    config = function(_, opts)
-      require('nvim-treesitter.config').setup(opts)
+    config = function()
+      require('nvim-treesitter').install {
+        'bash',
+        'c',
+        'html',
+        'javascript',
+        'lua',
+        'markdown',
+        'markdown_inline',
+        'ruby',
+        'vim',
+        'vimdoc',
+      }
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('user-treesitter', { clear = true }),
+        callback = function(args)
+          if pcall(vim.treesitter.start, args.buf) and vim.bo[args.buf].filetype ~= 'ruby' then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
     end,
   },
 
   {
     'mason-org/mason.nvim',
     config = function()
-      local mr = require('mason-registry')
-      local ok, pkg = pcall(mr.get_package, 'shellcheck')
-      if ok and not pkg:is_installed() then
-        pkg:install()
-      end
+      require('mason').setup()
+      local mr = require 'mason-registry'
+      local packages = {
+        'ansible-lint',
+        'autopep8',
+        'prettier',
+        'shellcheck',
+        'shfmt',
+        'stylua',
+        'xmlformatter',
+      }
+      mr.refresh(function()
+        for _, package_name in ipairs(packages) do
+          local ok, pkg = pcall(mr.get_package, package_name)
+          if ok then
+            if not pkg:is_installed() then
+              pkg:install()
+              vim.schedule(function()
+                vim.notify('[Mason] Package installed: ' .. package_name, vim.log.levels.INFO)
+              end)
+            end
+          else
+            vim.schedule(function()
+              vim.notify('[Mason] Package not found: ' .. package_name, vim.log.levels.WARN)
+            end)
+          end
+        end
+      end)
     end,
   },
 
   { -- LINTING
     'mfussenegger/nvim-lint',
-    dependencies = 'mason-org/mason.nvim',
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
       lint.linters_by_ft = {
-        -- maybe e need this at some point?
+        -- sh = { 'shellcheck' },
       }
 
       local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
@@ -396,31 +422,33 @@ require('lazy').setup({
     opts = {
       keymap = {
         preset = 'default',
-        ['<C-Z>'] = { 'accept', 'fallback' },
       },
       appearance = {
         nerd_font_variant = 'mono',
       },
       completion = { documentation = { auto_show = false } },
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer' },
+        per_filetype = { org = { inherit_defaults = true, 'org' } },
+        providers = {
+          lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', score_offset = 100 },
+          org = { name = 'Org', module = 'org.completion.blink' },
+        },
       },
-      fuzzy = { implementation = 'prefer_rust_with_warning' },
     },
     opts_extend = { 'sources.default' },
   },
 
   {
     'DrKJeff16/project.nvim',
+    main = 'project',
     event = 'VeryLazy',
     dependencies = { 'ibhagwan/fzf-lua' },
-    config = function()
-      require('project').setup {
-        fzf_lua = {
-          enabled = true,
-        },
-      }
-    end,
+    opts = {
+      fzf_lua = {
+        enabled = true,
+      },
+    },
     keys = {
       {
         '<leader>fp',
@@ -435,29 +463,37 @@ require('lazy').setup({
     dependencies = {
       'mason-org/mason.nvim',
       'mason-org/mason-lspconfig.nvim',
+      'saghen/blink.cmp',
     },
+    event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       require('mason').setup()
 
-      local servers = {
-        'ansiblels',
-        'bashls',
-        'lua_ls',
-        'marksman',
-      }
+      local servers = { 'ansiblels', 'bashls', 'lua_ls', 'marksman' }
 
-      require('mason-lspconfig').setup {
-        ensure_installed = servers
-      }
+      require('mason-lspconfig').setup { ensure_installed = servers, automatic_enable = false }
 
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-
-      for _, lsp_id in ipairs(servers) do
-        vim.lsp.config(lsp_id, { capabilities = capabilities })
-        vim.lsp.enable(lsp_id)
-      end
+      vim.lsp.config('*', { capabilities = require('blink.cmp').get_lsp_capabilities() })
+      vim.lsp.enable(servers)
     end,
   },
-}, {})
+
+  {
+    'xheisenbugx/org.nvim',
+    main = 'org',
+    lazy = false,
+    opts = {
+      org_directory = '~/org',
+      agenda_files = { '~/org/**/*.org' },
+      default_notes_file = '~/org/refile.org',
+    },
+  },
+
+  {
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    opts = {},
+  },
+}, { rocks = { enabled = false }, })
 
 -- vim: ts=2 sts=2 sw=2 et
