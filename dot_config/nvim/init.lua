@@ -45,7 +45,7 @@ vim.opt.updatetime = 250
 
 -- Decrease mapped sequence wait time
 -- Displays which-key popup sooner
-vim.opt.timeoutlen = 300
+vim.opt.timeoutlen = 500
 
 -- Configure how new splits should be opened
 vim.opt.splitright = true
@@ -64,7 +64,7 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 5
 
-if vim.fn.exists '+shellslash' > 0 then
+if vim.fn.has 'win32' == 1 then
   vim.opt.shellslash = true
 end
 
@@ -98,10 +98,9 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
-vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+for key, dir in pairs { left = 'h', right = 'l', up = 'k', down = 'j' } do
+  vim.keymap.set('n', '<' .. key .. '>', ('<cmd>echo "Use %s to move!!"<CR>'):format(dir))
+end
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -117,7 +116,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- Highlight when yanking (copying) text
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+  group = vim.api.nvim_create_augroup('aski/highlight-yank', { clear = true }),
   callback = function()
     -- TODO: on_yank is deprecated after 0.12, use vim.hl.hl_op()
     vim.hl.on_yank()
@@ -148,6 +147,7 @@ require('lazy').setup({
 
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
+    event = { 'BufReadPre', 'BufNewFile' },
     opts = {
       signs = {
         add = { text = '+' },
@@ -171,17 +171,42 @@ require('lazy').setup({
         desc = 'Buffer Local Keymaps (which-key)',
       },
     },
-    opts = {},
+    opts = {
+      spec = {
+        { '<leader>f', group = '[F]ind' },
+        { '<leader>c', group = '[C]ode' },
+      },
+    },
   },
 
   { -- FUZZY FINDER
     'ibhagwan/fzf-lua',
     dependencies = { 'nvim-mini/mini.nvim' },
     opts = {},
+    -- needed in order to register ui select
     event = 'VeryLazy',
     config = function(_, opts)
-      require('fzf-lua').setup(opts)
-      require('fzf-lua').register_ui_select()
+      local fzf = require('fzf-lua')
+
+      fzf.setup(opts)
+      fzf.register_ui_select()
+
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('aski/lsp-attach', { clear = true }),
+        callback = function(args)
+          local function map(keys, func, desc, mode)
+            vim.keymap.set(mode or 'n', keys, func, { buffer = args.buf, desc = 'LSP: ' .. desc })
+          end
+
+          map('grd', fzf.lsp_definitions, '[G]oto [D]efinition')
+          map('grr', fzf.lsp_references, '[G]oto [R]eferences')
+          map('gri', fzf.lsp_implementations, '[G]oto [I]mplementation')
+          map('grt', fzf.lsp_typedefs, '[G]oto [T]ype definition')
+          map('gO', fzf.lsp_document_symbols, 'Document symbols')
+          map('grw', fzf.lsp_live_workspace_symbols, 'Workspace symbols')
+          map('gra', fzf.lsp_code_actions, '[G]oto Code [A]ction', { 'n', 'x' })
+        end,
+      })
     end,
     keys = {
       {
@@ -268,12 +293,12 @@ require('lazy').setup({
     'stevearc/conform.nvim',
     keys = {
       {
-        '<leader>f',
+        '<leader>cf',
         function()
           require('conform').format { async = true }
         end,
-        mode = { 'n', 'v' },
-        desc = '[F]ormat buffer',
+        mode = { 'n', 'x' },
+        desc = '[C]ode [F]ormat',
       },
     },
     opts = {
@@ -299,8 +324,9 @@ require('lazy').setup({
 
   { -- COLORSCHEME
     'folke/tokyonight.nvim',
+    lazy = false,
     priority = 1000,
-    init = function()
+    config = function()
       vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
@@ -319,6 +345,7 @@ require('lazy').setup({
       require('mini.surround').setup()
       require('mini.icons').setup()
       require('mini.bracketed').setup()
+      require('mini.input').setup()
 
       local statusline = require 'mini.statusline'
       statusline.setup {
@@ -343,16 +370,24 @@ require('lazy').setup({
         'c',
         'html',
         'javascript',
+        'jinja',
+        'jinja_inline',
+        'json',
         'lua',
         'markdown',
         'markdown_inline',
+        'python',
         'ruby',
         'vim',
         'vimdoc',
+        'xml',
+        'yaml',
       }
 
+      vim.treesitter.language.register('jinja', 'jinja2')
+
       vim.api.nvim_create_autocmd('FileType', {
-        group = vim.api.nvim_create_augroup('user-treesitter', { clear = true }),
+        group = vim.api.nvim_create_augroup('aski/treesitter', { clear = true }),
         callback = function(args)
           if pcall(vim.treesitter.start, args.buf) and vim.bo[args.buf].filetype ~= 'ruby' then
             vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
@@ -399,15 +434,15 @@ require('lazy').setup({
   { -- LINTING
     'mfussenegger/nvim-lint',
     event = { 'BufReadPre', 'BufNewFile' },
+    enabled = false,
     config = function()
       local lint = require 'lint'
       lint.linters_by_ft = {
         -- sh = { 'shellcheck' },
       }
 
-      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
       vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
-        group = lint_augroup,
+        group = vim.api.nvim_create_augroup('aski/lint', { clear = true }),
         callback = function()
           require('lint').try_lint()
         end,
@@ -419,6 +454,7 @@ require('lazy').setup({
     'saghen/blink.cmp',
     version = '1.*',
     dependencies = 'rafamadriz/friendly-snippets',
+    event = 'VimEnter',
     opts = {
       keymap = {
         preset = 'default',
@@ -426,10 +462,12 @@ require('lazy').setup({
       appearance = {
         nerd_font_variant = 'mono',
       },
-      completion = { documentation = { auto_show = false } },
       sources = {
-        default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer' },
-        per_filetype = { org = { inherit_defaults = true, 'org' } },
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        per_filetype = {
+          lua = { inherit_defaults = true, 'lazydev' },
+          org = { inherit_defaults = true, 'org' },
+        },
         providers = {
           lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', score_offset = 100 },
           org = { name = 'Org', module = 'org.completion.blink' },
@@ -469,7 +507,7 @@ require('lazy').setup({
     config = function()
       require('mason').setup()
 
-      local servers = { 'ansiblels', 'bashls', 'lua_ls', 'marksman' }
+      local servers = { 'ansiblels', 'bashls', 'lua_ls', 'marksman', 'yamlls' }
 
       require('mason-lspconfig').setup { ensure_installed = servers, automatic_enable = false }
 
@@ -494,6 +532,6 @@ require('lazy').setup({
     ft = 'lua',
     opts = {},
   },
-}, { rocks = { enabled = false }, })
+}, { rocks = { enabled = false } })
 
 -- vim: ts=2 sts=2 sw=2 et
