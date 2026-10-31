@@ -72,6 +72,8 @@ vim.opt.winborder = 'rounded'
 
 vim.opt.confirm = true
 
+vim.o.conceallevel = 2
+
 vim.diagnostic.config {
   update_in_insert = false,
   severity_sort = true,
@@ -186,7 +188,7 @@ require('lazy').setup({
     -- needed in order to register ui select
     event = 'VeryLazy',
     config = function(_, opts)
-      local fzf = require('fzf-lua')
+      local fzf = require 'fzf-lua'
 
       fzf.setup(opts)
       fzf.register_ui_select()
@@ -517,13 +519,30 @@ require('lazy').setup({
   },
 
   {
-    'xheisenbugx/org.nvim',
-    main = 'org',
-    lazy = false,
+    'obsidian-nvim/obsidian.nvim',
+    version = '*',
+    ---@module 'obsidian'
+    ---@type obsidian.config
     opts = {
-      org_directory = '~/org',
-      agenda_files = { '~/org/**/*.org' },
-      default_notes_file = '~/org/refile.org',
+      legacy_commands = false,
+      picker = {
+        name = 'fzf-lua',
+      },
+      workspaces = {
+        {
+          name = 'personal',
+          path = '~/Documents/Obsidian Vault',
+        },
+      },
+    },
+    keys = {
+      {
+        '<leader>ot',
+        function()
+          vim.cmd 'Obsidian today'
+        end,
+        desc = "Obsidian: today's note",
+      },
     },
   },
 
