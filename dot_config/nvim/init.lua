@@ -407,6 +407,7 @@ require('lazy').setup({
       local packages = {
         'ansible-lint',
         'autopep8',
+        'hadolint',
         'prettier',
         'shellcheck',
         'shfmt',
@@ -509,7 +510,7 @@ require('lazy').setup({
     config = function()
       require('mason').setup()
 
-      local servers = { 'ansiblels', 'bashls', 'lua_ls', 'marksman', 'yamlls' }
+      local servers = { 'ansiblels', 'bashls', 'dockerls', 'lua_ls', 'marksman', 'yamlls' }
 
       require('mason-lspconfig').setup { ensure_installed = servers, automatic_enable = false }
 
