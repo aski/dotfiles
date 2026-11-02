@@ -43,9 +43,9 @@ setopt share_history
 set -o emacs
 bindkey -M emacs '^H' backward-kill-word
 
-[ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
+[ -f "$HOME/.config/shell/aliases" ] && source "$HOME/.config/shell/aliases"
 
-LOCAL_DIRCOLORS="${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors"
+LOCAL_DIRCOLORS="${XDG_CONFIG_HOME:-$HOME/.config}/dir_colors"
 if [ -f "$LOCAL_DIRCOLORS" ]; then
     CACHE_DIRCOLORS="${XDG_CACHE_HOME:-$HOME/.cache}/dircolors.zsh"
     if [[ ! -f "$CACHE_DIRCOLORS" || "$LOCAL_DIRCOLORS" -nt "$CACHE_DIRCOLORS" ]]; then

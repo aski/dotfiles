@@ -18,7 +18,11 @@ export LESS='-R'
 export MANPAGER="nvim +Man!"
 
 export ANSIBLE_NOCOWS=1
+export ANSIBLE_HOME="$HOME/.local/share/ansible"
+
 export MAVEN_OPTS='-Xmx4096m -Xms1024m'
+
+export NPM_CONFIG_CACHE="$HOME/.cache/npm"
 
 if (( $+commands[fd] )); then
     export FZF_DEFAULT_COMMAND='fd --type f'
