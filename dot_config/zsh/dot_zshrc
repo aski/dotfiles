@@ -11,14 +11,19 @@ ZSH_COMPDIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
 
 (( $+commands[kubectl] )) && [[ ! -f "$ZSH_COMPDIR/_kubectl" ]] && kubectl completion zsh > "$ZSH_COMPDIR/_kubectl"
 (( $+commands[helm] ))    && [[ ! -f "$ZSH_COMPDIR/_helm" ]]    && helm completion zsh > "$ZSH_COMPDIR/_helm"
+(( $+commands[rg] ))      && [[ ! -f "$ZSH_COMPDIR/_rg" ]]      && rg --generate complete-zsh > "$ZSH_COMPDIR/_rg"
+(( $+commands[fnm] ))     && [[ ! -f "$ZSH_COMPDIR/_fnm" ]]     && fnm completions --shell zsh > "$ZSH_COMPDIR/_fnm"
+
+ln -sf "$HOME/.local/opt/fd/autocomplete/_fd" "$ZSH_COMPDIR/_fd"
 
 fpath=("$ZSH_COMPDIR" $fpath)
 
 source "$ZSH_PLUGINS/yous/vanilli.sh/vanilli.zsh"
 source "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-source "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
-source "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
-source "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
+
+# TODO use starship for now
+#source "$ZSH_PLUGINS/mafredri/zsh-async/async.plugin.zsh"
+#source "$ZSH_PLUGINS/sindresorhus/pure/pure.plugin.zsh"
 
 autoload -Uz compinit
 compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump"
@@ -31,7 +36,6 @@ set -o emacs
 bindkey -M emacs '^H' backward-kill-word
 
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
-[ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
 
 LOCAL_DIRCOLORS="${XDG_CONFIG_HOME:-$HOME/.config}/.dir_colors"
 if [ -f "$LOCAL_DIRCOLORS" ]; then
@@ -44,16 +48,23 @@ if [ -f "$LOCAL_DIRCOLORS" ]; then
 fi
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-# Keep these commands at the end of the file
-
 # FZF
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.zsh" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.zsh"
+source <(fzf --zsh)
 
+# FNM
+eval "$(fnm env --use-on-cd --shell zsh)"
+
+# STARSHIP
+eval "$(starship init zsh)"
 
 # SDKMAN
-if [ -d "$HOME/.local/bin/sdkman" ]; then
-    export SDKMAN_DIR="$HOME/.local/bin/sdkman"
+if [ -d "$HOME/.local/opt/sdkman" ]; then
+    export SDKMAN_DIR="$HOME/.local/opt/sdkman"
     [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 fi
 
+[ -f "${ZDOTDIR:-$HOME}/.zshrc.local" ] && source "${ZDOTDIR:-$HOME}/.zshrc.local"
+
+# this should be sourced at the end of the file
+source "$ZSH_PLUGINS/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
 # vim: set filetype=zsh :

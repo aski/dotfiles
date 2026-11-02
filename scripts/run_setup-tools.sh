@@ -1,268 +1,151 @@
 #!/usr/bin/env bash
 
-echo "Tools installation..."
+set -euo pipefail
 
-set -e
+BOLD=$'\e[1m' RESET=$'\e[0m'
+printf '%sTools installation...%s\n' "$BOLD" "$RESET"
 
-if [ "$OSTYPE" != "linux-gnu" ]; then
+if [[ "$OSTYPE" != linux* ]]; then
     echo "Aborting... os type is $OSTYPE"
     exit 0
 fi
 
-if [ -z "${XDG_CONFIG_HOME+x}" ]; then
-    echo "XDG_CONFIG_HOME not set... aborting"
+if [[ $(uname -m) != x86_64 ]]; then
+    echo "Aborting... unsupported arch $(uname -m)"
     exit 0
 fi
 
-for cmd in curl git unzip tar sha256sum cut basename; do
+for cmd in curl zip unzip tar sha256sum python; do
     if ! command -v "$cmd" > /dev/null 2>&1; then
         echo "Error: Required system tool '$cmd' is not installed." >&2
         exit 1
     fi
 done
 
-INSTALL_DIR="$HOME/.local/bin"
+BIN_DIR="$HOME/.local/bin"
+APP_INSTALL_DIR="$HOME/.local/opt"
 
-mkdir -p "$INSTALL_DIR"
+mkdir -p "$BIN_DIR" "$APP_INSTALL_DIR"
 
-#################
-# FZF
-#################
+install_tool()
+{
+    local name=$1 url=$2 sha256=$3 strip=${4:-1}
 
-if [ ! -d "$INSTALL_DIR/fzf.d" ]; then
-    echo -n "Installing FZF ... "
-    git clone -q --depth 1 --branch master \
-        --single-branch https://github.com/junegunn/fzf "$INSTALL_DIR/fzf.d"
-    "$INSTALL_DIR/fzf.d/install" --all --xdg --no-update-rc
-    echo "DONE"
-fi
+    if [[ -d "$APP_INSTALL_DIR/$name" ]]; then
+        echo "✔ $name: already installed"
+        return 0
+    fi
 
-#################
-# AWS CLI
-#################
+    echo "… $name: installing"
 
-AWS_URL=https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    local temp_dir
+    temp_dir=$(mktemp -d) || return 1
+    trap 'rm -rf "$temp_dir"; trap - RETURN' RETURN
 
-if [ ! -f "$INSTALL_DIR/aws" ]; then
-    echo -n "Installing AWS CLI v2 ... "
-    rm -rf "$INSTALL_DIR/aws-cli"
-    TEMP_DIR=$(mktemp -d)
-    curl -o "$TEMP_DIR/awscli.zip" -sL "$AWS_URL"
-    unzip -qq "$TEMP_DIR/awscli.zip" -d "$TEMP_DIR"
-    "$TEMP_DIR//aws/install" -u -i "$INSTALL_DIR/aws-cli" -b "$INSTALL_DIR" > /dev/null
-    rm -rf "$TEMP_DIR"
-    echo "DONE"
-fi
+    curl -o "$temp_dir/archive" -fsSL "$url" || {
+        echo "⚠ failed to download $name" >&2
+        return 1
+    }
+
+    echo "$sha256  ""${temp_dir}""/archive" | sha256sum -c --quiet - || {
+        echo "⚠ checksum mismatch for $name" >&2
+        return 1
+    }
+
+    local stage_dir="$temp_dir/out"
+    mkdir -p "$stage_dir"
+
+    case "${url%%[?#]*}" in
+        *.zip)
+            unzip -q "$temp_dir/archive" -d "$stage_dir"
+            ;;
+        *.tar.gz)
+            tar -C "$stage_dir" --strip-components="$strip" -xf "$temp_dir/archive"
+            ;;
+        *)
+            mv "$temp_dir/archive" "$stage_dir/$name" \
+                && chmod +x "$stage_dir/$name"
+            ;;
+    esac || {
+        echo "⚠ failed to install $name" >&2
+        return 1
+    }
+
+    mv "$stage_dir" "$APP_INSTALL_DIR/$name"
+
+    echo "✔ $name: installed"
+}
 
 #################
 # FD
 #################
-
-FD_VERSION=v10.5.0
-FD_SHA256=a1259cd129636efbc3fef123525c1b49e88fe5088c012630983c310e52fdfa95
-FD_URL="https://github.com/sharkdp/fd/releases/download/$FD_VERSION/fd-$FD_VERSION-x86_64-unknown-linux-gnu.tar.gz"
-
-if [ ! -d "$INSTALL_DIR/fd.d" ]; then
-    echo -n "Installing FD ... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/fd.tar.gz -sL "$FD_URL"
-    echo "$FD_SHA256 ""${TEMP_DIR}""/fd.tar.gz" | sha256sum -c --quiet
-    mkdir -p "$INSTALL_DIR/fd.d"
-    tar -C "$INSTALL_DIR/fd.d" --strip-components=1 -xf "${TEMP_DIR}"/fd.tar.gz
-    rm -rf "${TEMP_DIR}"
-    echo "DONE"
-fi
-
-ln -sf "$INSTALL_DIR/fd.d/fd" "$INSTALL_DIR/fd"
-
-#################
-# HADOLINT
-#################
-
-HADOLINT_VERSION=v2.15.1
-HADOLINT_URL="https://github.com/hadolint/hadolint/releases/download/$HADOLINT_VERSION/hadolint-linux-x86_64"
-HADOLINT_SHA256="c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507"
-
-if [ ! -f "$INSTALL_DIR/hadolint" ]; then
-    echo -n "Installing HADOLINT ... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/hadolint -sL "$HADOLINT_URL"
-    echo "$HADOLINT_SHA256 ""${TEMP_DIR}""/hadolint" | sha256sum -c --quiet
-    mv "${TEMP_DIR}"/hadolint "$INSTALL_DIR"
-    chmod +x "$INSTALL_DIR/hadolint"
-    rm -rf "${TEMP_DIR}"
-    echo "DONE"
-fi
-
-#################
-# HELM
-#################
-
-HELM_VERSION=v3.22.0
-HELM_URL="https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz"
-HELM_CHECKSUM_URL="https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz.sha256sum"
-
-if [ ! -f "$INSTALL_DIR/helm" ]; then
-    echo -n "Installing HELM ... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/helm.tar.gz -sL "$HELM_URL"
-    curl -o "${TEMP_DIR}"/helm.sha256sum -sL "$HELM_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/helm.sha256sum) ""${TEMP_DIR}""/helm.tar.gz" | sha256sum -c --quiet
-    tar -C "$INSTALL_DIR" --strip-components=1 -xzf """${TEMP_DIR}""/helm.tar.gz" linux-amd64/helm
-    rm -rf "${TEMP_DIR}"
-    echo "DONE"
-fi
-
-#################
-# KUBECTL
-#################
-
-KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
-KUBECTL_URL="https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl"
-KUBECTL_CHECKSUM_URL="https://dl.k8s.io/$KUBECTL_VERSION/bin/linux/amd64/kubectl.sha256"
-
-if [ ! -f "$INSTALL_DIR/kubectl" ]; then
-    echo -n "Installing KUBECTL ... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/kubectl -sL "$KUBECTL_URL"
-    curl -o "${TEMP_DIR}"/kubectl.sha256sum -sL "$KUBECTL_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/kubectl.sha256sum) ""${TEMP_DIR}""/kubectl" | sha256sum -c --quiet
-    mv "${TEMP_DIR}"/kubectl "$INSTALL_DIR"
-    chmod +x "$INSTALL_DIR/kubectl"
-    rm -rf "${TEMP_DIR}"
-    echo "DONE"
-fi
+install_tool fd \
+    'https://github.com/sharkdp/fd/releases/download/v10.5.0/fd-v10.5.0-x86_64-unknown-linux-gnu.tar.gz' \
+    'a1259cd129636efbc3fef123525c1b49e88fe5088c012630983c310e52fdfa95'
+ln -sf "$APP_INSTALL_DIR/fd/fd" "$BIN_DIR/fd"
 
 #################
 # RIPGREP
 #################
-
-RG_VERSION=15.2.0
-RG_URL="https://github.com/BurntSushi/ripgrep/releases/download/$RG_VERSION/ripgrep-$RG_VERSION-x86_64-unknown-linux-musl.tar.gz"
-RG_CHECKSUM_URL="https://github.com/BurntSushi/ripgrep/releases/download/$RG_VERSION/ripgrep-$RG_VERSION-x86_64-unknown-linux-musl.tar.gz.sha256"
-
-if [ ! -d "$INSTALL_DIR/ripgrep" ]; then
-    echo -n "Installing RG ... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/rg.tar.gz -sL "$RG_URL"
-    curl -o "${TEMP_DIR}"/rg.tar.gz.sha256sum -sL "$RG_CHECKSUM_URL"
-    echo "$(cut -d' ' -f1 < "${TEMP_DIR}"/rg.tar.gz.sha256sum) ""${TEMP_DIR}""/rg.tar.gz" | sha256sum -c --quiet
-    mkdir -p "$INSTALL_DIR/ripgrep"
-    tar -C "$INSTALL_DIR/ripgrep" --strip-components=1 -xf "${TEMP_DIR}"/rg.tar.gz
-    rm -rf "${TEMP_DIR}"
-    echo "DONE"
-fi
-
-ln -sf "$INSTALL_DIR/ripgrep/rg" "$INSTALL_DIR/rg"
-
-#################
-# SDKMAN
-#################
-
-if [ ! -d "$INSTALL_DIR/sdkman" ]; then
-    echo -n "Installing SDKMAN ... "
-    export SDKMAN_DIR="$INSTALL_DIR/sdkman" \
-        && curl -s "https://get.sdkman.io?rcupdate=false" | bash > /dev/null 2>&1
-    echo "DONE"
-fi
+install_tool rg \
+    'https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz' \
+    '33e15bcf1624b25cdd2a55813a47a2f95dbe126268203e76aa6a585d1e7b149c'
+ln -sf "$APP_INSTALL_DIR/rg/rg" "$BIN_DIR/rg"
 
 #################
 # NEOVIM
 #################
-
-NVIM_VERSION=v0.12.5
-NVIM_URL="https://github.com/neovim/neovim/releases/download/$NVIM_VERSION/nvim-linux-x86_64.tar.gz"
-
-if [ ! -d "$INSTALL_DIR/neovim" ]; then
-    echo -n "Installing NEOVIM... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/nvim.tar.gz -L "$NVIM_URL"
-    mkdir -p "$INSTALL_DIR/neovim"
-    tar -C "$INSTALL_DIR/neovim" --strip-components=1 -xf "${TEMP_DIR}"/nvim.tar.gz
-    echo "DONE"
-fi
-
-ln -sf "$INSTALL_DIR/neovim/bin/nvim" "$INSTALL_DIR/nvim"
+install_tool nvim \
+    'https://github.com/neovim/neovim/releases/download/v0.12.6/nvim-linux-x86_64.tar.gz' \
+    '474430d53e6264f6d6dd18db42d6dc9df3a1b56ca9e88a325bbf860e1a811d87'
+ln -sf "$APP_INSTALL_DIR/nvim/bin/nvim" "$BIN_DIR/nvim"
 
 #################
-# SHELLCHECK
+# FZF
 #################
-
-SC_VERSION=v0.11.0
-SC_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
-SC_URL="https://github.com/koalaman/shellcheck/releases/download/$SC_VERSION/shellcheck-$SC_VERSION.linux.x86_64.tar.xz"
-
-if [ ! -f "$INSTALL_DIR/shellcheck" ]; then
-    echo -n "Installing SC ... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/sc.tar.xz -sL "$SC_URL"
-    echo "$SC_SHA256 ""${TEMP_DIR}""/sc.tar.xz" | sha256sum -c --quiet
-    tar -C "$INSTALL_DIR" --strip-components=1 -xf """${TEMP_DIR}""/sc.tar.xz" "shellcheck-$SC_VERSION/shellcheck"
-    rm "${TEMP_DIR}"/sc.tar.xz
-    echo "DONE"
-fi
-
-#################
-# LAZYGIT
-#################
-
-LAZYGIT_VERSION=0.65.1
-LAZYGIT_URL="https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-LAZYGIT_FILE=$(basename $LAZYGIT_URL)
-LAZYGIT_SHA256=02beacbcda0fa342e50ae3480ba8147307353af3fb28e1d5f790e02329c201a6
-
-if [ ! -f "$INSTALL_DIR/lazygit" ]; then
-    echo -n "Installing LAZYGIT... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/"$LAZYGIT_FILE" -sL "$LAZYGIT_URL"
-    echo "$LAZYGIT_SHA256 ""${TEMP_DIR}""/$LAZYGIT_FILE" | sha256sum -c --quiet
-    mkdir -p "$INSTALL_DIR/lazygit"
-    tar -C "$INSTALL_DIR" -xf "${TEMP_DIR}"/"$LAZYGIT_FILE" lazygit
-    rm "${TEMP_DIR}"/"$LAZYGIT_FILE"
-    echo "DONE"
-fi
-
-#################
-# SHFMT
-#################
-SHFMT_VERSION=3.14.1
-SHFMT_URL="https://github.com/mvdan/sh/releases/download/v${SHFMT_VERSION}/shfmt_v${SHFMT_VERSION}_linux_amd64"
-SHFMT_FILE=$(basename $SHFMT_URL)
-SHFMT_SHA256=76e77641faa025814b77f153b29796b8e6fa2fca03e0c76a691608b86c7ea7bf
-
-if [ ! -f "$INSTALL_DIR/shfmt" ]; then
-    echo -n "Installing SHFMT... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/"$SHFMT_FILE" -sL "$SHFMT_URL"
-    echo "$SHFMT_SHA256 ""${TEMP_DIR}""/$SHFMT_FILE" | sha256sum -c --quiet
-    mv "${TEMP_DIR}"/"$SHFMT_FILE" "$INSTALL_DIR/shfmt"
-    chmod u+x "$INSTALL_DIR/shfmt"
-    echo "DONE"
-fi
+install_tool fzf \
+    'https://github.com/junegunn/fzf/releases/download/v0.74.5/fzf-0.74.5-linux_amd64.tar.gz' \
+    'd47d7f882972c7d674dbbba998ffa4116e68379616ffac7695d0671e9a722c5f' 0
+ln -sf "$APP_INSTALL_DIR/fzf/fzf" "$BIN_DIR/fzf"
 
 #################
 # FNM
 #################
-FNM_VERSION=1.39.0
-FNM_URL="https://github.com/Schniz/fnm/releases/download/v$FNM_VERSION/fnm-linux.zip"
-FNM_FILE=$(basename $FNM_URL)
-FNM_SHA256="7807664f39d39fc518da1c35ba0181e4b3267603c4b1dedeb4b5fc6ae440a224"
+install_tool fnm \
+    'https://github.com/Schniz/fnm/releases/download/v1.39.0/fnm-linux.zip' \
+    '7807664f39d39fc518da1c35ba0181e4b3267603c4b1dedeb4b5fc6ae440a224'
+ln -sf "$APP_INSTALL_DIR/fnm/fnm" "$BIN_DIR/fnm"
 
-if [ ! -f "$INSTALL_DIR/fnm" ]; then
-    echo -n "Installing FNM... "
-    TEMP_DIR=$(mktemp -d)
-    curl -o "${TEMP_DIR}"/"$FNM_FILE" -sL "$FNM_URL"
-    echo "$FNM_SHA256 ""${TEMP_DIR}""/$FNM_FILE" | sha256sum -c --quiet
-    unzip "${TEMP_DIR}"/"$FNM_FILE" -d "${INSTALL_DIR}"
-    rm "${TEMP_DIR}"/"$FNM_FILE"
-    echo "DONE"
+#################
+# STARSHIP
+#################
+install_tool starship \
+    'https://github.com/starship/starship/releases/download/v1.27.0/starship-x86_64-unknown-linux-gnu.tar.gz' \
+    '3b94758850901717eb36aa1b53f8492c1322506ec6d41273bc6151e79ed8e4a1' 0
+ln -sf "$APP_INSTALL_DIR/starship/starship" "$BIN_DIR/starship"
+
+#################
+# SDKMAN
+#################
+if [ ! -d "$APP_INSTALL_DIR/sdkman" ]; then
+    echo "… sdkman: installing"
+    export SDKMAN_DIR="$APP_INSTALL_DIR/sdkman" \
+        && curl -fsSL "https://get.sdkman.io?ci=true&rcupdate=false" | bash > /dev/null 2>&1
+    echo "✔ sdkman: installed"
+else
+    echo "✔ sdkman: already installed"
 fi
 
-echo "DONE"
-
-PYTHON_CMD=$(command -v python3 || command -v python)
-
-if ! "$PYTHON_CMD" -m pip --version >/dev/null 2>&1; then
-    echo -n "Installing pip... "
-    python -m ensurepip --upgrade
+#################
+# PIPX
+#################
+if [ ! -d "$HOME/.local/venv" ]; then
+    echo "… pipx: installing"
+    python3 -m venv "$HOME/.local/venv"
+    "$HOME/.local/venv/bin/pip" install -q pipx
+    ln -sf "$HOME/.local/venv/bin/pipx" "$BIN_DIR/pipx"
+    echo "✔ pipx: installed"
+else
+    echo "✔ pipx: already installed"
 fi
+

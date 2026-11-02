@@ -468,11 +468,9 @@ require('lazy').setup({
         default = { 'lsp', 'path', 'snippets', 'buffer' },
         per_filetype = {
           lua = { inherit_defaults = true, 'lazydev' },
-          org = { inherit_defaults = true, 'org' },
         },
         providers = {
           lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', score_offset = 100 },
-          org = { name = 'Org', module = 'org.completion.blink' },
         },
       },
     },
@@ -564,6 +562,7 @@ require('lazy').setup({
     ft = 'lua',
     opts = {},
   },
+
 }, { rocks = { enabled = false } })
 
 -- vim: ts=2 sts=2 sw=2 et
