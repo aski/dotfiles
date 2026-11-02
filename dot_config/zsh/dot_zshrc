@@ -42,6 +42,7 @@ setopt share_history
 
 set -o emacs
 bindkey -M emacs '^H' backward-kill-word
+bindkey -M emacs '^y' autosuggest-accept
 
 [ -f "$HOME/.config/shell/aliases" ] && source "$HOME/.config/shell/aliases"
 
