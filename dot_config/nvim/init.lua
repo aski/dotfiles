@@ -72,8 +72,6 @@ vim.opt.winborder = 'rounded'
 
 vim.opt.confirm = true
 
-vim.o.conceallevel = 2
-
 vim.diagnostic.config {
   update_in_insert = false,
   severity_sort = true,
@@ -125,10 +123,32 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  desc = 'LSP keymaps',
+  group = vim.api.nvim_create_augroup('aski/lsp-attach', { clear = true }),
+  callback = function(args)
+    local function map(keys, picker, desc, mode)
+      vim.keymap.set(mode or 'n', keys, function()
+        require('fzf-lua')[picker]()
+      end, { buffer = args.buf, desc = 'LSP: ' .. desc })
+    end
+
+    map('grd', 'lsp_definitions', '[G]oto [D]efinition')
+    map('grr', 'lsp_references', '[G]oto [R]eferences')
+    map('gri', 'lsp_implementations', '[G]oto [I]mplementation')
+    map('grt', 'lsp_typedefs', '[G]oto [T]ype definition')
+    map('gO', 'lsp_document_symbols', 'Document symbols')
+    map('grw', 'lsp_live_workspace_symbols', 'Workspace symbols')
+    map('gra', 'lsp_code_actions', '[G]oto Code [A]ction', { 'n', 'x' })
+  end,
+})
+
 -- disable remote plugin providers to stop warnings in :checkhealth
 for _, p in ipairs { 'node', 'perl', 'python3', 'ruby' } do
   vim.g['loaded_' .. p .. '_provider'] = 0
 end
+
+local vault = vim.fn.expand '~/Documents/Obsidian Vault'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -177,6 +197,7 @@ require('lazy').setup({
       spec = {
         { '<leader>f', group = '[F]ind' },
         { '<leader>c', group = '[C]ode' },
+        { '<leader>o', group = '[O]bsidian' },
       },
     },
   },
@@ -192,23 +213,6 @@ require('lazy').setup({
 
       fzf.setup(opts)
       fzf.register_ui_select()
-
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('aski/lsp-attach', { clear = true }),
-        callback = function(args)
-          local function map(keys, func, desc, mode)
-            vim.keymap.set(mode or 'n', keys, func, { buffer = args.buf, desc = 'LSP: ' .. desc })
-          end
-
-          map('grd', fzf.lsp_definitions, '[G]oto [D]efinition')
-          map('grr', fzf.lsp_references, '[G]oto [R]eferences')
-          map('gri', fzf.lsp_implementations, '[G]oto [I]mplementation')
-          map('grt', fzf.lsp_typedefs, '[G]oto [T]ype definition')
-          map('gO', fzf.lsp_document_symbols, 'Document symbols')
-          map('grw', fzf.lsp_live_workspace_symbols, 'Workspace symbols')
-          map('gra', fzf.lsp_code_actions, '[G]oto Code [A]ction', { 'n', 'x' })
-        end,
-      })
     end,
     keys = {
       {
@@ -412,6 +416,7 @@ require('lazy').setup({
         'shellcheck',
         'shfmt',
         'stylua',
+        'tree-sitter-cli',
         'xmlformatter',
       }
       mr.refresh(function()
@@ -419,9 +424,14 @@ require('lazy').setup({
           local ok, pkg = pcall(mr.get_package, package_name)
           if ok then
             if not pkg:is_installed() then
-              pkg:install()
-              vim.schedule(function()
-                vim.notify('[Mason] Package installed: ' .. package_name, vim.log.levels.INFO)
+              pkg:install():once('closed', function()
+                vim.schedule(function()
+                  if pkg:is_installed() then
+                    vim.notify('[Mason] Package installed: ' .. package_name, vim.log.levels.INFO)
+                  else
+                    vim.notify('[Mason] Package failed to install: ' .. package_name, vim.log.levels.WARN)
+                  end
+                end)
               end)
             end
           else
@@ -519,6 +529,11 @@ require('lazy').setup({
   {
     'obsidian-nvim/obsidian.nvim',
     version = '*',
+    event = {
+      'BufReadPre ' .. vault .. '/*.md',
+      'BufNewFile ' .. vault .. '/*.md',
+    },
+    cmd = 'Obsidian',
     ---@module 'obsidian'
     ---@type obsidian.config
     opts = {
@@ -548,8 +563,9 @@ require('lazy').setup({
     'NeogitOrg/neogit',
     lazy = true,
     dependencies = {
-      'sindrets/diffview.nvim',
       'ibhagwan/fzf-lua',
+      'nvim-lua/plenary.nvim',
+      'sindrets/diffview.nvim',
     },
     cmd = 'Neogit',
     keys = {
@@ -562,7 +578,6 @@ require('lazy').setup({
     ft = 'lua',
     opts = {},
   },
-
 }, { rocks = { enabled = false } })
 
 -- vim: ts=2 sts=2 sw=2 et

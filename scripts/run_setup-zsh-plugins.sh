@@ -5,7 +5,7 @@ echo "ZSH plugin installation..."
 PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
 mkdir -p "$PLUGINS_DIR"
 
-if [ ! -d $PLUGINS_DIR/yous/vanilli.sh ]; then
+if [ ! -d "$PLUGINS_DIR/yous/vanilli.sh" ]; then
     git clone https://github.com/yous/vanilli.sh.git "$PLUGINS_DIR/yous/vanilli.sh"
 fi
 
@@ -27,6 +27,10 @@ fi
 
 if [ ! -d "$PLUGINS_DIR/sindresorhus/pure" ]; then
     git clone https://github.com/sindresorhus/pure.git "$PLUGINS_DIR/sindresorhus/pure"
+fi
+
+if [ ! -d "$PLUGINS_DIR/Aloxaf/fzf-tab" ]; then
+    git clone https://github.com/Aloxaf/fzf-tab "$PLUGINS_DIR/Aloxaf/fzf-tab"
 fi
 
 echo "DONE"

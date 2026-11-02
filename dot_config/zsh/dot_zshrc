@@ -9,12 +9,16 @@ fi
 ZSH_COMPDIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
 [[ -d "$ZSH_COMPDIR" ]] || mkdir -p "$ZSH_COMPDIR"
 
-(( $+commands[kubectl] )) && [[ ! -f "$ZSH_COMPDIR/_kubectl" ]] && kubectl completion zsh > "$ZSH_COMPDIR/_kubectl"
-(( $+commands[helm] ))    && [[ ! -f "$ZSH_COMPDIR/_helm" ]]    && helm completion zsh > "$ZSH_COMPDIR/_helm"
-(( $+commands[rg] ))      && [[ ! -f "$ZSH_COMPDIR/_rg" ]]      && rg --generate complete-zsh > "$ZSH_COMPDIR/_rg"
-(( $+commands[fnm] ))     && [[ ! -f "$ZSH_COMPDIR/_fnm" ]]     && fnm completions --shell zsh > "$ZSH_COMPDIR/_fnm"
+(( $+commands[kubectl] )) && [[ ! -s "$ZSH_COMPDIR/_kubectl" ]] && kubectl completion zsh > "$ZSH_COMPDIR/_kubectl"
+(( $+commands[helm] ))    && [[ ! -s "$ZSH_COMPDIR/_helm" ]]    && helm completion zsh > "$ZSH_COMPDIR/_helm"
+(( $+commands[rg] ))      && [[ ! -s "$ZSH_COMPDIR/_rg" ]]      && rg --generate complete-zsh > "$ZSH_COMPDIR/_rg"
+(( $+commands[fnm] ))     && [[ ! -s "$ZSH_COMPDIR/_fnm" ]]     && fnm completions --shell zsh > "$ZSH_COMPDIR/_fnm"
 
-ln -sf "$HOME/.local/opt/fd/autocomplete/_fd" "$ZSH_COMPDIR/_fd"
+(( $+commands[pipx] ))    && [[ -x "$HOME/.local/venv/bin/register-python-argcomplete" && ! -s "$ZSH_COMPDIR/_pipx" ]] \
+    && "$HOME/.local/venv/bin/register-python-argcomplete" -s zsh pipx > "$ZSH_COMPDIR/_pipx"
+
+[[ -f "$HOME/.local/opt/fd/autocomplete/_fd" && ! -s "$ZSH_COMPDIR/_fd" ]] \
+    && ln -sf "$HOME/.local/opt/fd/autocomplete/_fd" "$ZSH_COMPDIR/_fd"
 
 fpath=("$ZSH_COMPDIR" $fpath)
 
@@ -28,8 +32,12 @@ source "$ZSH_PLUGINS/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zs
 autoload -Uz compinit
 compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump"
 
+# TODO haven't decided if i like this
+#source "$ZSH_PLUGINS/Aloxaf/fzf-tab/fzf-tab.plugin.zsh"
+
+setopt hist_ignore_space
 setopt inc_append_history
-setopt nohist_findnodups
+setopt interactive_comments
 setopt share_history
 
 set -o emacs
