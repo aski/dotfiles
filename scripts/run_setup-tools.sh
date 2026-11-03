@@ -151,6 +151,14 @@ install_tool starship \
 ln -sf "$APP_INSTALL_DIR/starship/starship" "$BIN_DIR/starship"
 
 ###############################################################################
+# ZOXIDE
+###############################################################################
+install_tool zoxide \
+    'https://github.com/ajeetdsouza/zoxide/releases/download/v0.10.0/zoxide-0.10.0-x86_64-unknown-linux-musl.tar.gz' \
+    '2d93385b99f3e82cf2701609a1bffcad863fbeb75aa3fe7eb6be4d29be68b1ae' 0
+ln -sf "$APP_INSTALL_DIR/zoxide/zoxide" "$BIN_DIR/zoxide"
+
+###############################################################################
 # SDKMAN
 ###############################################################################
 if [ ! -f "$APP_INSTALL_DIR/sdkman/bin/sdkman-init.sh" ]; then

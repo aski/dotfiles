@@ -66,6 +66,9 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 # STARSHIP
 eval "$(starship init zsh)"
 
+# ZOXIDE
+eval "$(zoxide init zsh)"
+
 # SDKMAN
 if [ -d "$HOME/.local/opt/sdkman" ]; then
     export SDKMAN_DIR="$HOME/.local/opt/sdkman"
