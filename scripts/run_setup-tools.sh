@@ -9,23 +9,22 @@ for cmd in curl zip unzip tar sha256sum python3; do
     command -v "$cmd" >/dev/null || { echo "Error: Required system tool '$cmd' is not installed." >&2; exit 1; }
 done
 
+
 ###############################################################################
 # install_tool NAME URL SHA256 [STRIP]
 #
 # Download, verify, and install a tool into "$APP_INSTALL_DIR/NAME".
 #
-# Skips everything if "$APP_INSTALL_DIR/NAME" already exists.
-#
 # Arguments:
 #   NAME    Tool name; also the install subdirectory name.
 #   URL     Download URL. The extension (query/fragment ignored) selects how
 #           it is installed:
-#             *.zip     extracted as-is (STRIP is ignored)
-#             *.tar.gz  extracted with STRIP leading path components removed
-#             other     treated as a single binary, saved as NAME and made
-#                       executable
+#             *.zip           extracted as-is (STRIP is ignored)
+#             *.tar.*, *.tgz  extracted with STRIP leading path components removed
+#             other           treated as a single binary, saved as NAME and made
+#                             executable
 #   SHA256  Expected SHA-256 checksum of the downloaded file.
-#   STRIP   Optional. Leading path components to strip from tar.gz
+#   STRIP   Optional. Leading path components to strip from tar.* or tgz
 #           archives (default: 1).
 #
 # Globals:
@@ -35,11 +34,11 @@ done
 #   0 on success or if already installed; 1 on installation failure.
 #
 ###############################################################################
-install_tool()
-{
+install_tool() {
     local name=$1 url=$2 sha256=$3 strip=${4:-1}
+    local marker="$APP_INSTALL_DIR/.installed/$name"
 
-    if [[ -d "$APP_INSTALL_DIR/$name" ]]; then
+    if [[ -f "$marker" && -d "$APP_INSTALL_DIR/$name" && "$url $sha256" == "$(< "$marker")" ]]; then
         echo "✔ $name: already installed"
         return 0
     fi
@@ -50,7 +49,7 @@ install_tool()
     temp_dir=$(mktemp -d -p "$APP_INSTALL_DIR") || return 1
     trap 'rm -rf "$temp_dir"; trap - RETURN' RETURN
 
-    curl -o "$temp_dir/archive" -fsSL "$url" || {
+    curl -o "$temp_dir/archive" --retry 3 -fsSL "$url" || {
         echo "⚠ failed to download $name" >&2
         return 1
     }
@@ -65,9 +64,10 @@ install_tool()
 
     case "${url%%[?#]*}" in
         *.zip)
+            # NOTE: we're ignoring the strip argument for zips
             unzip -q "$temp_dir/archive" -d "$stage_dir"
             ;;
-        *.tar.gz)
+        *.tar.*|*.tgz)
             tar -C "$stage_dir" --strip-components="$strip" -xf "$temp_dir/archive"
             ;;
         *)
@@ -79,10 +79,14 @@ install_tool()
         return 1
     }
 
+    rm -rf "$APP_INSTALL_DIR/${name:?}"
+
     mv "$stage_dir" "$APP_INSTALL_DIR/$name" || {
         echo "⚠ failed to install $name" >&2
         return 1
     }
+
+    echo "$url $sha256" > "$marker"
 
     echo "✔ $name: installed"
 }
@@ -93,7 +97,7 @@ printf '%sTools installation...%s\n' "$BOLD" "$RESET"
 BIN_DIR="$HOME/.local/bin"
 APP_INSTALL_DIR="$HOME/.local/opt"
 
-mkdir -p "$BIN_DIR" "$APP_INSTALL_DIR"
+mkdir -p "$BIN_DIR" "$APP_INSTALL_DIR" "$APP_INSTALL_DIR/.installed"
 
 trap 'rm -rf "$APP_INSTALL_DIR"/tmp.*' EXIT
 
@@ -173,14 +177,15 @@ if [ ! -x "$HOME/.local/venv/bin/pipx" ]; then
         echo "⚠ failed to create python venv" >&2
         exit 1
     }
-    "$HOME/.local/venv/bin/pip" install -q pipx || {
+    "$HOME/.local/venv/bin/pip" install -q pipx==1.18.11 || {
         echo "⚠ failed to install pipx" >&2
         exit 1
     }
-    ln -sf "$HOME/.local/venv/bin/pipx" "$BIN_DIR/pipx"
     echo "✔ pipx: installed"
 else
     echo "✔ pipx: already installed"
 fi
+
+ln -sf "$HOME/.local/venv/bin/pipx" "$BIN_DIR/pipx"
 
 [[ ":$PATH:" == *":$BIN_DIR:"* ]] || echo "Note: add $BIN_DIR to your PATH"
