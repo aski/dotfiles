@@ -9,8 +9,6 @@ for cmd in curl zip unzip tar sha256sum python3; do
     command -v "$cmd" >/dev/null || { echo "Error: Required system tool '$cmd' is not installed." >&2; exit 1; }
 done
 
-set -x
-
 ###############################################################################
 # install_tool NAME URL SHA256 [STRIP]
 #
@@ -165,7 +163,7 @@ ln -sf "$APP_INSTALL_DIR/zoxide/zoxide" "$BIN_DIR/zoxide"
 install_tool kitty \
     'https://github.com/kovidgoyal/kitty/releases/download/v0.50.0/kitty-0.50.0-x86_64.txz' \
     'f04b11775574d6aabfb529b7e734cc0a7d7d12c7df9fb8ec1843e45420e514ee' 0
-ln -sf "$APP_INSTALL_DIR/kitty/kitty" "$BIN_DIR/kitty"
+ln -sf "$APP_INSTALL_DIR/kitty/bin/kitty" "$BIN_DIR/kitty"
 
 ###############################################################################
 # SDKMAN

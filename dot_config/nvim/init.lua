@@ -367,6 +367,7 @@ require('lazy').setup({
 
   {
     'nvim-treesitter/nvim-treesitter',
+    dependencies = 'mason-org/mason.nvim',
     branch = 'main',
     lazy = false,
     build = ':TSUpdate',
@@ -576,6 +577,11 @@ require('lazy').setup({
   {
     'folke/lazydev.nvim',
     ft = 'lua',
+    opts = {},
+  },
+
+  {
+    'stevearc/oil.nvim',
     opts = {},
   },
 }, { rocks = { enabled = false } })
