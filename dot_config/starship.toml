@@ -1,2 +1,5 @@
 [aws]
 enabled = false
+
+[kubernetes]
+enabled = false
